@@ -1,0 +1,4872 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>FERMA PRO</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:#f3f4f6;
+    color:#111827;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+#authScreen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:linear-gradient(135deg,#111827,#1f2937);
+}
+.authBox{
+    width:100%;
+    max-width:430px;
+    background:white;
+    border-radius:22px;
+    padding:28px;
+    box-shadow:0 20px 60px rgba(0,0,0,.3);
+}
+.logo{
+    font-size:30px;
+    font-weight:900;
+    text-align:center;
+    margin-bottom:6px;
+}
+.logoSub{
+    text-align:center;
+    color:#6b7280;
+    margin-bottom:25px;
+}
+.authTabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:20px;
+}
+.authTabs button{
+    flex:1;
+    border:0;
+    padding:12px;
+    border-radius:10px;
+    background:#e5e7eb;
+}
+.authTabs button.active{
+    background:#111827;
+    color:white;
+}
+.formGroup{margin-bottom:14px}
+label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:6px;
+}
+input,select,textarea{
+    width:100%;
+    border:1px solid #d1d5db;
+    border-radius:10px;
+    padding:11px 12px;
+    background:white;
+}
+textarea{min-height:80px;resize:vertical}
+.primary{
+    background:#166534;
+    color:white;
+    border:0;
+    border-radius:10px;
+    padding:12px 16px;
+    font-weight:800;
+}
+.secondary{
+    background:#e5e7eb;
+    color:#111827;
+    border:0;
+    border-radius:10px;
+    padding:10px 14px;
+    font-weight:700;
+}
+.danger{
+    background:#fee2e2;
+    color:#991b1b;
+    border:0;
+    border-radius:8px;
+    padding:8px 10px;
+    font-weight:700;
+}
+.warning{
+    background:#fef3c7;
+    color:#92400e;
+    border:0;
+    border-radius:8px;
+    padding:8px 10px;
+    font-weight:700;
+}
+.small{
+    padding:7px 9px;
+    font-size:12px;
+}
+
+#app{
+    min-height:100vh;
+}
+.layout{
+    display:flex;
+    min-height:100vh;
+}
+.sidebar{
+    width:240px;
+    background:#111827;
+    color:white;
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    overflow:auto;
+    z-index:20;
+}
+.brand{
+    padding:22px 18px;
+    font-size:24px;
+    font-weight:900;
+    border-bottom:1px solid #374151;
+}
+.brand small{
+    display:block;
+    color:#9ca3af;
+    font-size:11px;
+    margin-top:3px;
+}
+.nav{
+    padding:12px;
+}
+.nav button{
+    width:100%;
+    text-align:left;
+    border:0;
+    background:transparent;
+    color:#d1d5db;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:4px;
+    font-weight:700;
+}
+.nav button:hover,.nav button.active{
+    background:#374151;
+    color:white;
+}
+.navTitle{
+    color:#6b7280;
+    font-size:11px;
+    font-weight:900;
+    text-transform:uppercase;
+    margin:18px 10px 6px;
+}
+.main{
+    margin-left:240px;
+    width:calc(100% - 240px);
+}
+.topbar{
+    height:65px;
+    background:white;
+    border-bottom:1px solid #e5e7eb;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 22px;
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+.menuBtn{
+    display:none;
+}
+.content{
+    padding:22px;
+    max-width:1600px;
+    margin:auto;
+}
+.page{
+    display:none;
+}
+.page.active{
+    display:block;
+}
+.pageHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:20px;
+}
+.pageHeader h1{
+    margin:0;
+    font-size:28px;
+}
+.pageHeader p{
+    color:#6b7280;
+    margin:4px 0 0;
+}
+.actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:20px;
+}
+.card{
+    background:white;
+    border-radius:15px;
+    padding:18px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+.cardTitle{
+    color:#6b7280;
+    font-size:13px;
+    font-weight:700;
+}
+.cardValue{
+    font-size:27px;
+    font-weight:900;
+    margin-top:6px;
+}
+.cardHint{
+    color:#6b7280;
+    font-size:12px;
+    margin-top:4px;
+}
+
+.grid2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+}
+.grid3{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+.panel{
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:15px;
+    padding:18px;
+    margin-bottom:18px;
+}
+.panel h2{
+    font-size:18px;
+    margin:0 0 15px;
+}
+.tableWrap{
+    overflow:auto;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:700px;
+}
+th,td{
+    padding:10px 9px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+    font-size:13px;
+}
+th{
+    background:#f9fafb;
+    font-weight:800;
+}
+.badge{
+    display:inline-block;
+    padding:5px 8px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:800;
+}
+.badgeGreen{
+    background:#dcfce7;
+    color:#166534;
+}
+.badgeGray{
+    background:#e5e7eb;
+    color:#374151;
+}
+.badgeRed{
+    background:#fee2e2;
+    color:#991b1b;
+}
+.batchGrid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+.batchCard{
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    padding:16px;
+    background:white;
+}
+.batchCard h3{
+    margin:0 0 4px;
+}
+.metricRow{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:12px;
+}
+.metric{
+    background:#f9fafb;
+    border-radius:9px;
+    padding:9px;
+}
+.metric span{
+    display:block;
+    color:#6b7280;
+    font-size:11px;
+}
+.metric strong{
+    display:block;
+    margin-top:2px;
+}
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+    z-index:100;
+}
+.modal.show{display:flex}
+.modalBox{
+    background:white;
+    width:100%;
+    max-width:720px;
+    max-height:92vh;
+    overflow:auto;
+    border-radius:18px;
+    padding:20px;
+}
+.modalHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+.modalHeader h2{
+    margin:0;
+}
+.close{
+    border:0;
+    background:#e5e7eb;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    font-size:20px;
+}
+.formGrid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+.formFull{
+    grid-column:1/-1;
+}
+.modalFooter{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:18px;
+}
+.recipeItem{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr auto;
+    gap:8px;
+    margin-bottom:8px;
+    align-items:end;
+}
+.empty{
+    text-align:center;
+    color:#6b7280;
+    padding:30px;
+}
+.chartBox{
+    position:relative;
+    height:330px;
+}
+.reportBox{
+    line-height:1.5;
+}
+.reportHeader{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    border-bottom:2px solid #111827;
+    padding-bottom:15px;
+    margin-bottom:18px;
+}
+.reportTable{
+    min-width:0;
+}
+.reportTable th,.reportTable td{
+    border:1px solid #d1d5db;
+}
+.toast{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    z-index:300;
+    background:#111827;
+    color:white;
+    padding:13px 17px;
+    border-radius:10px;
+    display:none;
+    max-width:400px;
+}
+.toast.show{display:block}
+
+@media(max-width:1100px){
+    .cards{grid-template-columns:repeat(2,1fr)}
+    .batchGrid{grid-template-columns:repeat(2,1fr)}
+    .grid3{grid-template-columns:1fr 1fr}
+}
+@media(max-width:800px){
+    .sidebar{
+        transform:translateX(-100%);
+        transition:.25s;
+    }
+    .sidebar.open{
+        transform:translateX(0);
+    }
+    .main{
+        margin-left:0;
+        width:100%;
+    }
+    .menuBtn{
+        display:block;
+        border:0;
+        background:#e5e7eb;
+        border-radius:8px;
+        width:38px;
+        height:38px;
+    }
+    .topbar{
+        padding:0 12px;
+    }
+    .content{
+        padding:14px;
+    }
+    .cards,.batchGrid,.grid2,.grid3{
+        grid-template-columns:1fr;
+    }
+    .pageHeader{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+    .formGrid{
+        grid-template-columns:1fr;
+    }
+    .formFull{
+        grid-column:auto;
+    }
+    .recipeItem{
+        grid-template-columns:1fr 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="authScreen">
+    <div class="authBox">
+        <div class="logo">FERMA PRO</div>
+        <div class="logoSub">Облік ферми</div>
+
+        <div class="authTabs">
+            <button id="loginTab" class="active" onclick="showAuth('login')">Вхід</button>
+            <button id="registerTab" onclick="showAuth('register')">Реєстрація</button>
+        </div>
+
+        <div id="loginForm">
+            <div class="formGroup">
+                <label>Email</label>
+                <input id="loginEmail" type="email" autocomplete="email">
+            </div>
+
+            <div class="formGroup">
+                <label>Пароль</label>
+                <input id="loginPassword" type="password" autocomplete="current-password">
+            </div>
+
+            <button class="primary" style="width:100%" onclick="login()">Увійти</button>
+        </div>
+
+        <div id="registerForm" class="hidden">
+            <div class="formGroup">
+                <label>Email</label>
+                <input id="regEmail" type="email" autocomplete="email">
+            </div>
+
+            <div class="formGroup">
+                <label>Пароль</label>
+                <input id="regPassword" type="password" autocomplete="new-password">
+            </div>
+
+            <button class="primary" style="width:100%" onclick="register()">Створити акаунт</button>
+        </div>
+
+        <div id="authMessage" style="margin-top:15px;color:#991b1b;font-size:13px"></div>
+    </div>
+</div>
+
+<div id="app" class="hidden">
+
+<div class="layout">
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+        FERMA PRO
+        <small>Облік ферми</small>
+    </div>
+
+    <div class="nav">
+
+        <div class="navTitle">Основне</div>
+
+        <button class="active" onclick="showPage('dashboard',this)">
+            🏠 Головна
+        </button>
+
+        <button onclick="showPage('broilers',this)">
+            🐔 Бройлери
+        </button>
+
+        <button onclick="showPage('layers',this)">
+            🥚 Кури-несучки
+        </button>
+
+        <div class="navTitle">Облік</div>
+
+        <button onclick="showPage('feed',this)">
+            🌾 Корми
+        </button>
+
+        <button onclick="showPage('clients',this)">
+            👥 Клієнти
+        </button>
+
+        <button onclick="showPage('finance',this)">
+            💰 Фінанси
+        </button>
+
+        <button onclick="showPage('reports',this)">
+            📊 Звіти
+        </button>
+
+        <div class="navTitle">Акаунт</div>
+
+        <button onclick="logout()">
+            🚪 Вийти
+        </button>
+
+    </div>
+</aside>
+
+<main class="main">
+
+<header class="topbar">
+    <button class="menuBtn" onclick="toggleSidebar()">☰</button>
+    <strong id="topTitle">Головна</strong>
+    <span id="userEmail" style="font-size:12px;color:#6b7280"></span>
+</header>
+
+<div class="content">
+
+<!-- DASHBOARD -->
+<section id="page-dashboard" class="page active">
+
+    <div class="pageHeader">
+        <div>
+            <h1>Головна</h1>
+            <p>Поточний стан ферми</p>
+        </div>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <div class="cardTitle">Активні партії бройлерів</div>
+            <div class="cardValue" id="dashBroilerBatches">0</div>
+        </div>
+
+        <div class="card">
+            <div class="cardTitle">Бройлерів</div>
+            <div class="cardValue" id="dashBroilerHeads">0</div>
+        </div>
+
+        <div class="card">
+            <div class="cardTitle">Активні групи курей</div>
+            <div class="cardValue" id="dashLayerFlocks">0</div>
+        </div>
+
+        <div class="card">
+            <div class="cardTitle">Несучок</div>
+            <div class="cardValue" id="dashLayerHeads">0</div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+        <h2>Активні партії бройлерів</h2>
+        <div id="dashboardBroilers" class="batchGrid"></div>
+    </div>
+
+    <div class="panel">
+        <h2>Активні групи курей-несучок</h2>
+        <div id="dashboardLayers" class="batchGrid"></div>
+    </div>
+
+</section>
+
+<!-- BROILERS -->
+<section id="page-broilers" class="page">
+
+    <div class="pageHeader">
+        <div>
+            <h1>🐔 Бройлери</h1>
+            <p>Повний облік партій, ваги, корму, лікування та реалізації</p>
+        </div>
+
+        <div class="actions">
+            <button class="primary" onclick="openBroilerBatchModal()">+ Нова партія</button>
+            <button class="secondary" onclick="loadAll()">↻ Оновити</button>
+        </div>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <div class="cardTitle">Активні партії</div>
+            <div class="cardValue" id="broilerActiveCount">0</div>
+        </div>
+
+        <div class="card">
+            <div class="cardTitle">Загальне поголів'я</div>
+            <div class="cardValue" id="broilerTotalHeads">0</div>
+        </div>
+
+        <div class="card">
+            <div class="cardTitle">Загальний корм</div>
+            <div class="cardValue" id="broilerTotalFeed">0 кг</div>
+        </div>
+
+        <div class="card">
+            <div class="cardTitle">Загальна маса</div>
+            <div class="cardValue" id="broilerTotalMass">0 кг</div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+        <h2>Партії</h2>
+        <div class="tableWrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Партія</th>
+                        <th>Порода</th>
+                        <th>Посадка</th>
+                        <th>Вік</th>
+                        <th>Голів</th>
+                        <th>Середня вага</th>
+                        <th>Маса</th>
+                        <th>Корм</th>
+                        <th>FCR</th>
+                        <th>Статус</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody id="broilerTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="broilerDetails"></div>
+
+</section>
+
+<!-- LAYERS -->
+<section id="page-layers" class="page">
+
+    <div class="pageHeader">
+        <div>
+            <h1>🥚 Кури-несучки</h1>
+            <p>Вирощування 1–140 днів та кладка 140+</p>
+        </div>
+
+        <button class="primary" onclick="openLayerModal()">+ Нова група</button>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <div class="cardTitle">Активні групи</div>
+            <div class="cardValue" id="layerActiveCount">0</div>
+        </div>
+
+        <div class="card">
+            <div class="cardTitle">Поголів'я</div>
+            <div class="cardValue" id="layerTotalHeads">0</div>
+        </div>
+
+        <div class="card">
+            <div class="cardTitle">Яйця сьогодні</div>
+            <div class="cardValue" id="layerEggsToday">0</div>
+        </div>
+
+        <div class="card">
+            <div class="cardTitle">Корм</div>
+            <div class="cardValue" id="layerFeedTotal">0 кг</div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+        <h2>Групи курей</h2>
+
+        <div class="tableWrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Група</th>
+                        <th>Порода</th>
+                        <th>Посадка</th>
+                        <th>Вік</th>
+                        <th>Початково</th>
+                        <th>Зараз</th>
+                        <th>Падіж</th>
+                        <th>Яйця</th>
+                        <th>Корм</th>
+                        <th>Статус</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody id="layerTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="layerDetails"></div>
+
+</section>
+
+<!-- FEED -->
+<section id="page-feed" class="page">
+
+    <div class="pageHeader">
+        <div>
+            <h1>🌾 Корми</h1>
+            <p>Інгредієнти, рецепти та кормові періоди</p>
+        </div>
+
+        <div class="actions">
+            <button class="primary" onclick="openIngredientModal()">+ Інгредієнт</button>
+            <button class="primary" onclick="openRecipeModal()">+ Рецепт</button>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Інгредієнти</h2>
+
+        <div class="tableWrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Назва</th>
+                        <th>Ціна грн/кг</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody id="ingredientsTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Рецепти</h2>
+
+        <div class="tableWrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Назва</th>
+                        <th>Період</th>
+                        <th>Інгредієнти</th>
+                        <th>Собівартість 1 кг</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody id="recipesTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Періоди корму для бройлерів</h2>
+
+        <div class="tableWrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Період</th>
+                        <th>Дні</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Стартер</td><td>1–15</td></tr>
+                    <tr><td>Гровер 15–20</td><td>15–20</td></tr>
+                    <tr><td>Гровер 21–28</td><td>21–28</td></tr>
+                    <tr><td>Гровер 29–35</td><td>29–35</td></tr>
+                    <tr><td>Фініш 36–42</td><td>36–42</td></tr>
+                    <tr><td>Фініш 43–50</td><td>43–50</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Періоди корму для курей-несучок</h2>
+
+        <div class="tableWrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Період</th>
+                        <th>Дні</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Вирощування</strong></td>
+                        <td>1–140</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Кладка</strong></td>
+                        <td>140+</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+
+<!-- CLIENTS -->
+<section id="page-clients" class="page">
+
+    <div class="pageHeader">
+        <div>
+            <h1>👥 Клієнти</h1>
+            <p>Клієнти та контакти</p>
+        </div>
+
+        <button class="primary" onclick="openClientModal()">+ Клієнт</button>
+    </div>
+
+    <div class="panel">
+
+        <div class="tableWrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ім'я</th>
+                        <th>Телефон</th>
+                        <th>Примітки</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsTable"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- FINANCE -->
+<section id="page-finance" class="page">
+
+    <div class="pageHeader">
+        <div>
+            <h1>💰 Фінанси</h1>
+            <p>Доходи та витрати</p>
+        </div>
+
+        <button class="primary" onclick="openFinanceModal()">+ Операція</button>
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <div class="cardTitle">Доходи</div>
+            <div class="cardValue" id="financeIncome">0 грн</div>
+        </div>
+
+        <div class="card">
+            <div class="cardTitle">Витрати</div>
+            <div class="cardValue" id="financeExpense">0 грн</div>
+        </div>
+
+        <div class="card">
+            <div class="cardTitle">Результат</div>
+            <div class="cardValue" id="financeProfit">0 грн</div>
+        </div>
+    </div>
+
+    <div class="panel">
+
+        <div class="tableWrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Тип</th>
+                        <th>Категорія</th>
+                        <th>Сума</th>
+                        <th>Опис</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody id="financeTable"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- REPORTS -->
+<section id="page-reports" class="page">
+
+    <div class="pageHeader">
+        <div>
+            <h1>📊 Звіти</h1>
+            <p>Повний друкований звіт по партії</p>
+        </div>
+    </div>
+
+    <div class="panel">
+
+        <div class="formGroup">
+            <label>Оберіть партію бройлерів</label>
+            <select id="reportBatchSelect"></select>
+        </div>
+
+        <button class="primary" onclick="generateBroilerReport()">
+            Створити звіт для друку
+        </button>
+
+    </div>
+
+    <div id="reportPreview"></div>
+
+</section>
+
+</div>
+</main>
+</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+    <div class="modalBox">
+
+        <div class="modalHeader">
+            <h2 id="modalTitle">Форма</h2>
+            <button class="close" onclick="closeModal()">×</button>
+        </div>
+
+        <div id="modalBody"></div>
+
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+    'https://axxormlcevusdjfqruib.supabase.co';
+
+const SUPABASE_ANON_KEY =
+    'sb_publishable_fmFGe67Hi8_nUZC8sKP5xg_piWbDfZi';
+
+const { createClient } = window.supabase;
+
+const supabaseClient = createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
+    {
+        auth:{
+            autoRefreshToken:true,
+            persistSession:true,
+            detectSessionInUrl:true
+        }
+    }
+);
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let currentUser = null;
+
+let batches = [];
+let flocks = [];
+let ingredients = [];
+let recipes = [];
+let clients = [];
+let finances = [];
+
+let selectedBatch = null;
+let selectedFlock = null;
+
+let chartWeight = null;
+let chartFeed = null;
+let chartLayer = null;
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function $(id){
+    return document.getElementById(id);
+}
+
+function safeNum(v){
+    const n = Number(v);
+    return Number.isFinite(n) ? n : 0;
+}
+
+function fmt(v,d=2){
+    return safeNum(v).toLocaleString('uk-UA',{
+        minimumFractionDigits:d,
+        maximumFractionDigits:d
+    });
+}
+
+function today(){
+    return new Date().toISOString().slice(0,10);
+}
+
+function escapeHtml(str){
+    return String(str ?? '')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
+}
+
+function showToast(text){
+    const t=$('toast');
+    t.textContent=text;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+function showError(error){
+    console.error(error);
+    showToast(error?.message || String(error));
+}
+
+function ageDays(date){
+    if(!date)return 0;
+    const a=new Date(date+'T00:00:00');
+    const b=new Date();
+    return Math.max(0,Math.floor((b-a)/86400000)+1);
+}
+
+function openModal(title,body){
+    $('modalTitle').textContent=title;
+    $('modalBody').innerHTML=body;
+    $('modal').classList.add('show');
+}
+
+function closeModal(){
+    $('modal').classList.remove('show');
+    $('modalBody').innerHTML='';
+}
+
+function toggleSidebar(){
+    $('sidebar').classList.toggle('open');
+}
+
+function showPage(page,btn){
+
+    document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+
+    const p=$('page-'+page);
+    if(p)p.classList.add('active');
+
+    document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+
+    if(btn)btn.classList.add('active');
+
+    const titles={
+        dashboard:'Головна',
+        broilers:'Бройлери',
+        layers:'Кури-несучки',
+        feed:'Корми',
+        clients:'Клієнти',
+        finance:'Фінанси',
+        reports:'Звіти'
+    };
+
+    $('topTitle').textContent=titles[page]||'FERMA PRO';
+
+    if(window.innerWidth<800){
+        $('sidebar').classList.remove('open');
+    }
+
+    if(page==='dashboard')renderDashboard();
+    if(page==='broilers')renderBroilers();
+    if(page==='layers')renderLayers();
+    if(page==='feed')renderFeed();
+    if(page==='clients')renderClients();
+    if(page==='finance')renderFinance();
+    if(page==='reports')renderReports();
+}
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+function showAuth(type){
+
+    $('loginForm').classList.toggle('hidden',type!=='login');
+    $('registerForm').classList.toggle('hidden',type!=='register');
+
+    $('loginTab').classList.toggle('active',type==='login');
+    $('registerTab').classList.toggle('active',type==='register');
+
+    $('authMessage').textContent='';
+}
+
+async function login(){
+
+    const email=$('loginEmail').value.trim();
+    const password=$('loginPassword').value;
+
+    if(!email || !password){
+        $('authMessage').textContent='Введіть email та пароль';
+        return;
+    }
+
+    $('authMessage').textContent='Вхід...';
+
+    try{
+
+        const {data,error}=await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if(error)throw error;
+
+        if(data?.user){
+            currentUser=data.user;
+            await startApp();
+        }
+
+    }catch(error){
+
+        console.error('LOGIN ERROR:',error);
+
+        $('authMessage').textContent=
+            error.message || 'Помилка входу';
+
+    }
+}
+
+
+async function register(){
+
+    const email=$('regEmail').value.trim();
+    const password=$('regPassword').value;
+
+    if(!email || !password){
+        $('authMessage').textContent='Введіть email та пароль';
+        return;
+    }
+
+    if(password.length<6){
+        $('authMessage').textContent='Пароль має містити мінімум 6 символів';
+        return;
+    }
+
+    $('authMessage').textContent='Реєстрація...';
+
+    try{
+
+        const redirectTo=
+            window.location.origin+
+            window.location.pathname;
+
+        const {data,error}=await supabaseClient.auth.signUp({
+            email,
+            password,
+            options:{
+                emailRedirectTo:redirectTo
+            }
+        });
+
+        if(error)throw error;
+
+        if(data.session && data.user){
+
+            currentUser=data.user;
+
+            await startApp();
+
+        }else{
+
+            $('authMessage').style.color='#166534';
+
+            $('authMessage').textContent=
+                'Акаунт створено. Перевірте email для підтвердження.';
+
+        }
+
+    }catch(error){
+
+        console.error('REGISTER ERROR:',error);
+
+        $('authMessage').style.color='#991b1b';
+
+        $('authMessage').textContent=
+            error.message || 'Помилка реєстрації';
+
+    }
+}
+
+
+async function logout(){
+
+    await supabaseClient.auth.signOut();
+
+    currentUser=null;
+
+    $('app').classList.add('hidden');
+    $('authScreen').classList.remove('hidden');
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+async function startApp(){
+
+    $('authScreen').classList.add('hidden');
+    $('app').classList.remove('hidden');
+
+    $('userEmail').textContent=currentUser?.email||'';
+
+    await loadAll();
+
+}
+
+
+supabaseClient.auth.onAuthStateChange((event,session)=>{
+
+    if(session?.user && !currentUser){
+
+        currentUser=session.user;
+
+        startApp();
+
+    }
+
+});
+
+
+async function init(){
+
+    try{
+
+        const {data,error}=await supabaseClient.auth.getSession();
+
+        if(error)throw error;
+
+        if(data.session?.user){
+
+            currentUser=data.session.user;
+
+            await startApp();
+
+        }
+
+    }catch(error){
+
+        console.error('SESSION ERROR:',error);
+
+        $('authMessage').textContent=
+            error.message || 'Помилка підключення';
+
+    }
+
+}
+
+init();
+
+
+/* =========================================================
+   LOAD ALL
+========================================================= */
+
+async function loadAll(){
+
+    if(!currentUser)return;
+
+    try{
+
+        await Promise.all([
+            loadBatches(),
+            loadFlocks(),
+            loadIngredients(),
+            loadRecipes(),
+            loadClients(),
+            loadFinance()
+        ]);
+
+        renderDashboard();
+        renderBroilers();
+        renderLayers();
+        renderFeed();
+        renderClients();
+        renderFinance();
+        renderReports();
+
+    }catch(error){
+
+        showError(error);
+
+    }
+
+}
+
+
+/* =========================================================
+   BROILER BATCHES
+========================================================= */
+
+async function loadBatches(){
+
+    const {data,error}=await supabaseClient
+        .from('broiler_batches')
+        .select('*')
+        .eq('user_id',currentUser.id)
+        .order('created_at',{ascending:false});
+
+    if(error)throw error;
+
+    batches=data||[];
+}
+
+
+function getActiveBatches(){
+
+    return batches.filter(x=>x.status==='active');
+
+}
+
+
+async function getBroilerStats(batchId){
+
+    const {data:daily,error:dailyError}=await supabaseClient
+        .from('broiler_daily')
+        .select('*')
+        .eq('user_id',currentUser.id)
+        .eq('batch_id',batchId)
+        .order('record_date',{ascending:true});
+
+    if(dailyError)throw dailyError;
+
+    const {data:weights,error:weightError}=await supabaseClient
+        .from('broiler_weights')
+        .select('*')
+        .eq('user_id',currentUser.id)
+        .eq('batch_id',batchId)
+        .order('weight_date',{ascending:true});
+
+    if(weightError)throw weightError;
+
+    const {data:treatments,error:treatmentError}=await supabaseClient
+        .from('broiler_treatments')
+        .select('*')
+        .eq('user_id',currentUser.id)
+        .eq('batch_id',batchId)
+        .order('treatment_date',{ascending:true});
+
+    if(treatmentError)throw treatmentError;
+
+    const totalFeed=(daily||[]).reduce((s,x)=>s+safeNum(x.feed_kg),0);
+
+    const latestDaily=(daily||[]).at(-1);
+
+    const latestWeight=(weights||[]).at(-1);
+
+    const firstWeight=(weights||[])[0];
+
+    const heads=latestDaily
+        ? safeNum(latestDaily.heads)
+        : safeNum(batchInitialHeads(batchId));
+
+    const avgWeightG=latestWeight
+        ? safeNum(latestWeight.average_weight_g)
+        : 0;
+
+    const liveMass=
+        heads*avgWeightG/1000;
+
+    const initialMass=
+        safeNum(batchInitialHeads(batchId))*
+        safeNum(firstWeight?.average_weight_g)/1000;
+
+    let fcr=0;
+    let fcrType='';
+
+    if(liveMass>initialMass && totalFeed>0){
+
+        fcr=totalFeed/(liveMass-initialMass);
+
+        fcrType='приріст';
+
+    }else if(liveMass>0 && totalFeed>0){
+
+        fcr=totalFeed/liveMass;
+
+        fcrType='поточний';
+
+    }
+
+    const mortality=(daily||[]).reduce(
+        (s,x)=>s+safeNum(x.mortality),0
+    );
+
+    const medicineCost=(treatments||[]).reduce(
+        (s,x)=>
+            s+
+            safeNum(x.ml_used)/10*
+            safeNum(x.price_per_10ml),
+        0
+    );
+
+    return{
+        daily:daily||[],
+        weights:weights||[],
+        treatments:treatments||[],
+        totalFeed,
+        latestDaily,
+        latestWeight,
+        firstWeight,
+        heads,
+        avgWeightG,
+        liveMass,
+        mortality,
+        fcr,
+        fcrType,
+        medicineCost
+    };
+
+}
+
+
+function batchInitialHeads(id){
+
+    const b=batches.find(x=>x.id===id);
+
+    return safeNum(b?.initial_heads);
+
+}
+
+
+async function renderBroilers(){
+
+    const active=getActiveBatches();
+
+    $('broilerActiveCount').textContent=active.length;
+
+    let totalHeads=0;
+    let totalFeed=0;
+    let totalMass=0;
+
+    const rows=[];
+
+    for(const b of active){
+
+        let s;
+
+        try{
+            s=await getBroilerStats(b.id);
+        }catch(e){
+            console.error(e);
+            s={
+                heads:b.initial_heads,
+                totalFeed:0,
+                avgWeightG:0,
+                liveMass:0,
+                fcr:0,
+                fcrType:''
+            };
+        }
+
+        totalHeads+=s.heads;
+        totalFeed+=s.totalFeed;
+        totalMass+=s.liveMass;
+
+        rows.push(`
+        <tr>
+            <td><strong>${escapeHtml(b.name)}</strong></td>
+            <td>${escapeHtml(b.breed||'')}</td>
+            <td>${b.placement_date}</td>
+            <td>${ageDays(b.placement_date)} дн.</td>
+            <td>${fmt(s.heads,0)}</td>
+            <td>${fmt(s.avgWeightG,0)} г</td>
+            <td>${fmt(s.liveMass)} кг</td>
+            <td>${fmt(s.totalFeed)} кг</td>
+            <td>${s.fcr?fmt(s.fcr,3):'—'}</td>
+            <td><span class="badge badgeGreen">Активна</span></td>
+            <td>
+                <button class="secondary small" onclick="selectBroiler('${b.id}')">Відкрити</button>
+                <button class="secondary small" onclick="editBroilerBatch('${b.id}')">Ред.</button>
+                <button class="warning small" onclick="archiveBroiler('${b.id}')">Архів</button>
+                <button class="danger small" onclick="deleteBroiler('${b.id}')">Видалити</button>
+            </td>
+        </tr>
+        `);
+
+    }
+
+    $('broilerTotalHeads').textContent=fmt(totalHeads,0);
+    $('broilerTotalFeed').textContent=fmt(totalFeed)+' кг';
+    $('broilerTotalMass').textContent=fmt(totalMass)+' кг';
+
+    $('broilerTable').innerHTML=
+        rows.length
+        ? rows.join('')
+        : `<tr><td colspan="11" class="empty">Партій ще немає</td></tr>`;
+
+}
+
+
+async function selectBroiler(id){
+
+    selectedBatch=id;
+
+    const b=batches.find(x=>x.id===id);
+
+    if(!b)return;
+
+    const s=await getBroilerStats(id);
+
+    $('broilerDetails').innerHTML=`
+
+    <div class="panel">
+
+        <div class="pageHeader">
+            <div>
+                <h2 style="margin:0">${escapeHtml(b.name)}</h2>
+                <p>Вік: ${ageDays(b.placement_date)} днів</p>
+            </div>
+
+            <div class="actions">
+                <button class="primary" onclick="openDailyModal('${id}')">+ Щоденний облік</button>
+                <button class="primary" onclick="openWeightModal('${id}')">+ Зважування</button>
+                <button class="primary" onclick="openTreatmentModal('${id}')">+ Лікування</button>
+                <button class="secondary" onclick="openSlaughterModal('${id}')">Забій</button>
+                <button class="secondary" onclick="openSaleModal('${id}')">Продаж</button>
+                <button class="secondary" onclick="openHomeUseModal('${id}')">Додому</button>
+            </div>
+        </div>
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="cardTitle">Поголів'я</div>
+                <div class="cardValue">${fmt(s.heads,0)}</div>
+            </div>
+
+            <div class="card">
+                <div class="cardTitle">Середня вага</div>
+                <div class="cardValue">${fmt(s.avgWeightG,0)} г</div>
+            </div>
+
+            <div class="card">
+                <div class="cardTitle">Жива маса</div>
+                <div class="cardValue">${fmt(s.liveMass)} кг</div>
+            </div>
+
+            <div class="card">
+                <div class="cardTitle">FCR</div>
+                <div class="cardValue">${s.fcr?fmt(s.fcr,3):'—'}</div>
+                <div class="cardHint">${s.fcrType||''}</div>
+            </div>
+
+        </div>
+
+        <div class="grid2">
+
+            <div class="panel">
+                <h2>Динаміка ваги</h2>
+                <div class="chartBox">
+                    <canvas id="weightChart"></canvas>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Корм</h2>
+                <div class="chartBox">
+                    <canvas id="feedChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="panel">
+            <h2>Зважування</h2>
+
+            <div class="tableWrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>День</th>
+                            <th>Зважено</th>
+                            <th>Середня вага</th>
+                            <th>Мін.</th>
+                            <th>Макс.</th>
+                            <th>Загальна маса</th>
+                            <th>Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    ${(s.weights||[]).map(w=>`
+
+                        <tr>
+                            <td>${w.weight_date}</td>
+                            <td>${w.growing_day??''}</td>
+                            <td>${fmt(w.weighed_heads,0)}</td>
+                            <td>${fmt(w.average_weight_g,0)} г</td>
+                            <td>${w.min_weight_g!=null?fmt(w.min_weight_g,0)+' г':'—'}</td>
+                            <td>${w.max_weight_g!=null?fmt(w.max_weight_g,0)+' г':'—'}</td>
+                            <td>${fmt(w.total_weight_kg)} кг</td>
+                            <td>
+                                <button class="secondary small" onclick="editWeight('${batchId}','${w.id}')">Ред.</button> <button class="secondary small" onclick="editWeight('${batchId}','${w.id}')">Ред.</button> <button class="danger small" onclick="deleteWeight('${w.id}')">Видалити</button>
+                            </td>
+                        </tr>
+
+                    `).join('')||`<tr><td colspan="8" class="empty">Немає зважувань</td></tr>`}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Щоденний облік</h2>
+
+            <div class="tableWrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Голів</th>
+                            <th>Падіж</th>
+                            <th>Корм</th>
+                            <th>Вода</th>
+                            <th>Препарат</th>
+                            <th>Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    ${(s.daily||[]).map(d=>`
+
+                        <tr>
+                            <td>${d.record_date}</td>
+                            <td>${fmt(d.heads,0)}</td>
+                            <td>${fmt(d.mortality,0)}</td>
+                            <td>${fmt(d.feed_kg)} кг</td>
+                            <td>${fmt(d.water_liters)} л</td>
+                            <td>${escapeHtml(d.medicine||'')}</td>
+                            <td>
+                                <button class="secondary small" onclick="editDaily('${batchId}','${d.id}')">Ред.</button> <button class="secondary small" onclick="editDaily('${batchId}','${d.id}')">Ред.</button> <button class="danger small" onclick="deleteDaily('${d.id}')">Видалити</button>
+                            </td>
+                        </tr>
+
+                    `).join('')||`<tr><td colspan="7" class="empty">Немає записів</td></tr>`}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Лікування</h2>
+
+            <div class="tableWrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>День</th>
+                            <th>Препарат</th>
+                            <th>Мл</th>
+                            <th>Ціна за 10 мл</th>
+                            <th>Вартість</th>
+                            <th>Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    ${(s.treatments||[]).map(t=>`
+
+                        <tr>
+                            <td>${t.treatment_date}</td>
+                            <td>${t.growing_day??''}</td>
+                            <td>${escapeHtml(t.medicine_name)}</td>
+                            <td>${fmt(t.ml_used)} мл</td>
+                            <td>${fmt(t.price_per_10ml)} грн</td>
+                            <td>${fmt(safeNum(t.ml_used)/10*safeNum(t.price_per_10ml))} грн</td>
+                            <td>
+                                <button class="secondary small" onclick="editTreatment('${batchId}','${t.id}')">Ред.</button> <button class="secondary small" onclick="editTreatment('${batchId}','${t.id}')">Ред.</button> <button class="danger small" onclick="deleteTreatment('${t.id}')">Видалити</button>
+                            </td>
+                        </tr>
+
+                    `).join('')||`<tr><td colspan="7" class="empty">Лікування не записане</td></tr>`}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    `;
+
+    setTimeout(()=>{
+        renderBroilerCharts(s);
+    },50);
+
+}
+
+
+function renderBroilerCharts(s){
+
+    if(chartWeight)chartWeight.destroy();
+    if(chartFeed)chartFeed.destroy();
+
+    const weightCanvas=$('weightChart');
+    const feedCanvas=$('feedChart');
+
+    if(weightCanvas){
+
+        chartWeight=new Chart(weightCanvas,{
+            type:'line',
+            data:{
+                labels:s.weights.map(x=>x.weight_date),
+                datasets:[{
+                    label:'Середня вага, г',
+                    data:s.weights.map(x=>safeNum(x.average_weight_g)),
+                    tension:.3
+                }]
+            },
+            options:{
+                responsive:true,
+                maintainAspectRatio:false
+            }
+        });
+
+    }
+
+    if(feedCanvas){
+
+        chartFeed=new Chart(feedCanvas,{
+            type:'bar',
+            data:{
+                labels:s.daily.map(x=>x.record_date),
+                datasets:[{
+                    label:'Корм, кг',
+                    data:s.daily.map(x=>safeNum(x.feed_kg))
+                }]
+            },
+            options:{
+                responsive:true,
+                maintainAspectRatio:false
+            }
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   BROILER CRUD
+========================================================= */
+
+function openBroilerBatchModal(batch=null){
+
+    const edit=!!batch;
+
+    openModal(
+        edit?'Редагування партії':'Нова партія',
+        `
+
+        <div class="formGrid">
+
+            <div>
+                <label>Назва партії</label>
+                <input id="bfName" value="${escapeHtml(batch?.name||'')}">
+            </div>
+
+            <div>
+                <label>Порода</label>
+                <input id="bfBreed" value="${escapeHtml(batch?.breed||'Cobb 500')}">
+            </div>
+
+            <div>
+                <label>Дата посадки</label>
+                <input id="bfDate" type="date" value="${batch?.placement_date||today()}">
+            </div>
+
+            <div>
+                <label>Початкове поголів'я</label>
+                <input id="bfHeads" type="number" min="0" value="${batch?.initial_heads??0}">
+            </div>
+
+            <div>
+                <label>Ціна курчати, грн</label>
+                <input id="bfChickPrice" type="number" step="0.01" value="${batch?.chick_price??0}">
+            </div>
+
+            <div>
+                <label>Цільова вага, кг</label>
+                <input id="bfTarget" type="number" step="0.01" value="${batch?.target_weight??4.8}">
+            </div>
+
+            <div class="formFull">
+                <label>Примітки</label>
+                <textarea id="bfNotes">${escapeHtml(batch?.notes||'')}</textarea>
+            </div>
+
+        </div>
+
+        <div class="modalFooter">
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+            <button class="primary" onclick="saveBroilerBatch('${batch?.id||''}')">
+                ${edit?'Зберегти':'Додати партію'}
+            </button>
+        </div>
+
+        `
+    );
+
+}
+
+
+async function saveBroilerBatch(id){
+
+    try{
+
+        const payload={
+            user_id:currentUser.id,
+            name:$('bfName').value.trim(),
+            placement_date:$('bfDate').value,
+            initial_heads:safeNum($('bfHeads').value),
+            chick_price:safeNum($('bfChickPrice').value),
+            target_weight:safeNum($('bfTarget').value),
+            breed:$('bfBreed').value.trim(),
+            notes:$('bfNotes').value.trim()
+        };
+
+        if(!payload.name){
+            showToast('Вкажіть назву партії');
+            return;
+        }
+
+        let error;
+
+        if(id){
+
+            ({error}=await supabaseClient
+                .from('broiler_batches')
+                .update(payload)
+                .eq('id',id)
+                .eq('user_id',currentUser.id));
+
+        }else{
+
+            ({error}=await supabaseClient
+                .from('broiler_batches')
+                .insert(payload));
+
+        }
+
+        if(error)throw error;
+
+        closeModal();
+
+        await loadAll();
+
+        showToast(id?'Партію змінено':'Партію додано');
+
+    }catch(error){
+
+        showError(error);
+
+    }
+
+}
+
+
+async function editBroilerBatch(id){
+
+    const b=batches.find(x=>x.id===id);
+
+    if(b)openBroilerBatchModal(b);
+
+}
+
+
+async function archiveBroiler(id){
+
+    if(!confirm('Перемістити партію в архів?'))return;
+
+    try{
+
+        const {error}=await supabaseClient
+            .from('broiler_batches')
+            .update({
+                status:'archived',
+                archived_at:new Date().toISOString()
+            })
+            .eq('id',id)
+            .eq('user_id',currentUser.id);
+
+        if(error)throw error;
+
+        await loadAll();
+
+        showToast('Партію переміщено в архів');
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+async function deleteBroiler(id){
+
+    if(!confirm('Видалити партію? Дані партії також можуть залишитися у пов’язаних таблицях.'))return;
+
+    try{
+
+        const {error}=await supabaseClient
+            .from('broiler_batches')
+            .delete()
+            .eq('id',id)
+            .eq('user_id',currentUser.id);
+
+        if(error)throw error;
+
+        await loadAll();
+
+        showToast('Партію видалено');
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+/* =========================================================
+   DAILY BROILER
+========================================================= */
+
+async function openDailyModal(batchId){
+
+    const b=batches.find(x=>x.id===batchId);
+
+    openModal(
+        'Щоденний облік',
+        `
+
+        <div class="formGrid">
+
+            <div>
+                <label>Дата</label>
+                <input id="dfDate" type="date" value="${today()}">
+            </div>
+
+            <div>
+                <label>Голів</label>
+                <input id="dfHeads" type="number" min="0" value="${b?.initial_heads||0}">
+            </div>
+
+            <div>
+                <label>Падіж за день</label>
+                <input id="dfMortality" type="number" min="0" value="0">
+            </div>
+
+            <div>
+                <label>Загальний корм, кг</label>
+                <input id="dfFeed" type="number" step="0.01" value="0">
+            </div>
+
+            <div>
+                <label>Вода, л</label>
+                <input id="dfWater" type="number" step="0.01" value="0">
+            </div>
+
+            <div>
+                <label>Препарат</label>
+                <input id="dfMedicine">
+            </div>
+
+            <div class="formFull">
+                <label>Примітки</label>
+                <textarea id="dfNotes"></textarea>
+            </div>
+
+        </div>
+
+        <div class="modalFooter">
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+            <button class="primary" onclick="saveDaily('${batchId}')">Зберегти</button>
+        </div>
+
+        `
+    );
+
+}
+
+
+async function saveDaily(batchId){
+
+    try{
+
+        const payload={
+            user_id:currentUser.id,
+            batch_id:batchId,
+            record_date:$('dfDate').value,
+            heads:safeNum($('dfHeads').value),
+            mortality:safeNum($('dfMortality').value),
+            feed_kg:safeNum($('dfFeed').value),
+            water_liters:safeNum($('dfWater').value),
+            medicine:$('dfMedicine').value.trim(),
+            notes:$('dfNotes').value.trim()
+        };
+
+        const {error}=await supabaseClient
+            .from('broiler_daily')
+            .insert(payload);
+
+        if(error)throw error;
+
+        closeModal();
+
+        await selectBroiler(batchId);
+
+        showToast('Щоденний запис додано');
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+async function deleteDaily(id){
+
+    if(!confirm('Видалити запис?'))return;
+
+    try{
+
+        const {error}=await supabaseClient
+            .from('broiler_daily')
+            .delete()
+            .eq('id',id)
+            .eq('user_id',currentUser.id);
+
+        if(error)throw error;
+
+        if(selectedBatch)await selectBroiler(selectedBatch);
+
+        showToast('Запис видалено');
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+/* =========================================================
+   WEIGHTS
+========================================================= */
+
+async function openWeightModal(batchId){
+
+    const b=batches.find(x=>x.id===batchId);
+
+    openModal(
+        'Зважування',
+        `
+
+        <div class="formGrid">
+
+            <div>
+                <label>Дата</label>
+                <input id="wfDate" type="date" value="${today()}">
+            </div>
+
+            <div>
+                <label>День вирощування</label>
+                <input id="wfDay" type="number" value="${ageDays(b?.placement_date)}">
+            </div>
+
+            <div>
+                <label>Кількість зважених</label>
+                <input id="wfHeads" type="number" min="1" value="10">
+            </div>
+
+            <div>
+                <label>Середня вага, г</label>
+                <input id="wfAvg" type="number" step="0.1" value="0">
+            </div>
+
+            <div>
+                <label>Мінімальна вага, г</label>
+                <input id="wfMin" type="number" step="0.1" value="0">
+            </div>
+
+            <div>
+                <label>Максимальна вага, г</label>
+                <input id="wfMax" type="number" step="0.1" value="0">
+            </div>
+
+            <div class="formFull">
+                <label>Примітки</label>
+                <textarea id="wfNotes"></textarea>
+            </div>
+
+        </div>
+
+        <div class="modalFooter">
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+            <button class="primary" onclick="saveWeight('${batchId}')">Зберегти</button>
+        </div>
+
+        `
+    );
+
+}
+
+
+async function saveWeight(batchId){
+
+    try{
+
+        const avg=safeNum($('wfAvg').value);
+
+        const payload={
+            user_id:currentUser.id,
+            batch_id:batchId,
+            weight_date:$('wfDate').value,
+            growing_day:safeNum($('wfDay').value),
+            weighed_heads:safeNum($('wfHeads').value),
+            average_weight_g:avg,
+            min_weight_g:safeNum($('wfMin').value)||null,
+            max_weight_g:safeNum($('wfMax').value)||null,
+            total_weight_kg:
+                safeNum($('wfHeads').value)*avg/1000,
+            notes:$('wfNotes').value.trim()
+        };
+
+        const {error}=await supabaseClient
+            .from('broiler_weights')
+            .insert(payload);
+
+        if(error)throw error;
+
+        closeModal();
+
+        await selectBroiler(batchId);
+
+        showToast('Зважування додано');
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+async function deleteWeight(id){
+
+    if(!confirm('Видалити зважування?'))return;
+
+    try{
+
+        const {error}=await supabaseClient
+            .from('broiler_weights')
+            .delete()
+            .eq('id',id)
+            .eq('user_id',currentUser.id);
+
+        if(error)throw error;
+
+        if(selectedBatch)await selectBroiler(selectedBatch);
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+/* =========================================================
+   TREATMENTS
+========================================================= */
+
+async function openTreatmentModal(batchId){
+
+    const b=batches.find(x=>x.id===batchId);
+
+    openModal(
+        'Лікування',
+        `
+
+        <div class="formGrid">
+
+            <div>
+                <label>Дата</label>
+                <input id="tfDate" type="date" value="${today()}">
+            </div>
+
+            <div>
+                <label>День</label>
+                <input id="tfDay" type="number" value="${ageDays(b?.placement_date)}">
+            </div>
+
+            <div>
+                <label>Препарат</label>
+                <input id="tfMedicine">
+            </div>
+
+            <div>
+                <label>Витрачено, мл</label>
+                <input id="tfMl" type="number" step="0.01" value="0">
+            </div>
+
+            <div>
+                <label>Ціна за 10 мл, грн</label>
+                <input id="tfPrice" type="number" step="0.01" value="0">
+            </div>
+
+            <div class="formFull">
+                <label>Примітки</label>
+                <textarea id="tfNotes"></textarea>
+            </div>
+
+        </div>
+
+        <div class="modalFooter">
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+            <button class="primary" onclick="saveTreatment('${batchId}')">Зберегти</button>
+        </div>
+
+        `
+    );
+
+}
+
+
+async function saveTreatment(batchId){
+
+    try{
+
+        const ml=safeNum($('tfMl').value);
+        const price=safeNum($('tfPrice').value);
+
+        const payload={
+            user_id:currentUser.id,
+            batch_id:batchId,
+            treatment_date:$('tfDate').value,
+            growing_day:safeNum($('tfDay').value),
+            medicine_name:$('tfMedicine').value.trim(),
+            ml_used:ml,
+            price_per_10ml:price,
+            total_cost:ml/10*price,
+            notes:$('tfNotes').value.trim()
+        };
+
+        if(!payload.medicine_name){
+            showToast('Вкажіть препарат');
+            return;
+        }
+
+        const {error}=await supabaseClient
+            .from('broiler_treatments')
+            .insert(payload);
+
+        if(error)throw error;
+
+        closeModal();
+
+        await selectBroiler(batchId);
+
+        showToast('Лікування додано');
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+async function deleteTreatment(id){
+
+    if(!confirm('Видалити лікування?'))return;
+
+    try{
+
+        const {error}=await supabaseClient
+            .from('broiler_treatments')
+            .delete()
+            .eq('id',id)
+            .eq('user_id',currentUser.id);
+
+        if(error)throw error;
+
+        if(selectedBatch)await selectBroiler(selectedBatch);
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+/* =========================================================
+   LAYERS
+========================================================= */
+
+async function loadFlocks(){
+
+    const {data,error}=await supabaseClient
+        .from('layer_flocks')
+        .select('*')
+        .eq('user_id',currentUser.id)
+        .order('created_at',{ascending:false});
+
+    if(error)throw error;
+
+    flocks=data||[];
+
+}
+
+
+async function getLayerStats(flockId){
+
+    const {data,error}=await supabaseClient
+        .from('layer_daily')
+        .select('*')
+        .eq('user_id',currentUser.id)
+        .eq('flock_id',flockId)
+        .order('record_date',{ascending:true});
+
+    if(error)throw error;
+
+    const daily=data||[];
+
+    const latest=daily.at(-1);
+
+    return{
+        daily,
+        heads:latest
+            ?safeNum(latest.heads)
+            :safeNum(flocks.find(x=>x.id===flockId)?.current_heads),
+        eggs:daily.reduce((s,x)=>s+safeNum(x.eggs),0),
+        feed:daily.reduce((s,x)=>s+safeNum(x.feed_kg),0),
+        mortality:daily.reduce((s,x)=>s+safeNum(x.mortality),0)
+    };
+
+}
+
+
+async function renderLayers(){
+
+    const active=flocks.filter(x=>x.status==='active');
+
+    $('layerActiveCount').textContent=active.length;
+
+    let totalHeads=0;
+    let eggs=0;
+    let feed=0;
+
+    const rows=[];
+
+    for(const f of active){
+
+        let s;
+
+        try{
+            s=await getLayerStats(f.id);
+        }catch(e){
+            s={
+                heads:safeNum(f.current_heads),
+                eggs:0,
+                feed:0,
+                mortality:0
+            };
+        }
+
+        totalHeads+=s.heads;
+        eggs+=s.eggs;
+        feed+=s.feed;
+
+        rows.push(`
+        <tr>
+            <td><strong>${escapeHtml(f.name)}</strong></td>
+            <td>${escapeHtml(f.breed||'')}</td>
+            <td>${f.placement_date||''}</td>
+            <td>${f.placement_date?ageDays(f.placement_date):'—'} ${f.placement_date?'дн.':''}</td>
+            <td>${fmt(f.initial_heads,0)}</td>
+            <td>${fmt(s.heads,0)}</td>
+            <td>${fmt(s.mortality,0)}</td>
+            <td>${fmt(s.eggs,0)}</td>
+            <td>${fmt(s.feed)} кг</td>
+            <td><span class="badge badgeGreen">Активна</span></td>
+            <td>
+                <button class="secondary small" onclick="selectLayer('${f.id}')">Відкрити</button>
+                <button class="secondary small" onclick="editLayer('${f.id}')">Ред.</button>
+                <button class="warning small" onclick="archiveLayer('${f.id}')">Архів</button>
+                <button class="danger small" onclick="deleteLayer('${f.id}')">Видалити</button>
+            </td>
+        </tr>
+        `);
+
+    }
+
+    $('layerTotalHeads').textContent=fmt(totalHeads,0);
+    $('layerEggsToday').textContent=fmt(eggs,0);
+    $('layerFeedTotal').textContent=fmt(feed)+' кг';
+
+    $('layerTable').innerHTML=
+        rows.length
+        ?rows.join('')
+        :`<tr><td colspan="11" class="empty">Груп ще немає</td></tr>`;
+
+}
+
+
+function openLayerModal(flock=null){
+
+    openModal(
+        flock?'Редагування групи':'Нова група курей',
+        `
+
+        <div class="formGrid">
+
+            <div>
+                <label>Назва групи</label>
+                <input id="lfName" value="${escapeHtml(flock?.name||'')}">
+            </div>
+
+            <div>
+                <label>Порода</label>
+                <input id="lfBreed" value="${escapeHtml(flock?.breed||'Dominant')}">
+            </div>
+
+            <div>
+                <label>Дата посадки</label>
+                <input id="lfDate" type="date" value="${flock?.placement_date||today()}">
+            </div>
+
+            <div>
+                <label>Початкове поголів'я</label>
+                <input id="lfInitial" type="number" value="${flock?.initial_heads??0}">
+            </div>
+
+            <div>
+                <label>Поточне поголів'я</label>
+                <input id="lfCurrent" type="number" value="${flock?.current_heads??0}">
+            </div>
+
+            <div>
+                <label>Ціна курки, грн</label>
+                <input id="lfPrice" type="number" step="0.01" value="${flock?.hen_price??0}">
+            </div>
+
+            <div class="formFull">
+                <label>Примітки</label>
+                <textarea id="lfNotes">${escapeHtml(flock?.notes||'')}</textarea>
+            </div>
+
+        </div>
+
+        <div class="modalFooter">
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+            <button class="primary" onclick="saveLayer('${flock?.id||''}')">
+                ${flock?'Зберегти':'Додати'}
+            </button>
+        </div>
+
+        `
+    );
+
+}
+
+
+async function saveLayer(id){
+
+    try{
+
+        const payload={
+            user_id:currentUser.id,
+            name:$('lfName').value.trim(),
+            breed:$('lfBreed').value.trim(),
+            placement_date:$('lfDate').value||null,
+            initial_heads:safeNum($('lfInitial').value),
+            current_heads:safeNum($('lfCurrent').value),
+            hen_price:safeNum($('lfPrice').value),
+            notes:$('lfNotes').value.trim()
+        };
+
+        let error;
+
+        if(id){
+
+            ({error}=await supabaseClient
+                .from('layer_flocks')
+                .update(payload)
+                .eq('id',id)
+                .eq('user_id',currentUser.id));
+
+        }else{
+
+            ({error}=await supabaseClient
+                .from('layer_flocks')
+                .insert(payload));
+
+        }
+
+        if(error)throw error;
+
+        closeModal();
+
+        await loadAll();
+
+        showToast('Збережено');
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+function editLayer(id){
+
+    const f=flocks.find(x=>x.id===id);
+
+    if(f)openLayerModal(f);
+
+}
+
+
+async function archiveLayer(id){
+
+    if(!confirm('Перемістити групу в архів?'))return;
+
+    try{
+
+        const {error}=await supabaseClient
+            .from('layer_flocks')
+            .update({
+                status:'archived',
+                archived_at:new Date().toISOString()
+            })
+            .eq('id',id)
+            .eq('user_id',currentUser.id);
+
+        if(error)throw error;
+
+        await loadAll();
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+async function deleteLayer(id){
+
+    if(!confirm('Видалити групу?'))return;
+
+    try{
+
+        const {error}=await supabaseClient
+            .from('layer_flocks')
+            .delete()
+            .eq('id',id)
+            .eq('user_id',currentUser.id);
+
+        if(error)throw error;
+
+        await loadAll();
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+async function selectLayer(id){
+
+    selectedFlock=id;
+
+    const f=flocks.find(x=>x.id===id);
+
+    if(!f)return;
+
+    const s=await getLayerStats(id);
+
+    $('layerDetails').innerHTML=`
+
+    <div class="panel">
+
+        <div class="pageHeader">
+            <div>
+                <h2>${escapeHtml(f.name)}</h2>
+                <p>${escapeHtml(f.breed||'')} · ${f.placement_date?ageDays(f.placement_date)+' днів':''}</p>
+            </div>
+
+            <div class="actions">
+                <button class="primary" onclick="openLayerDailyModal('${id}')">+ Щоденний облік</button>
+                <button class="secondary" onclick="openEggSaleModal('${id}')">Продаж яєць</button>
+            </div>
+        </div>
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="cardTitle">Поголів'я</div>
+                <div class="cardValue">${fmt(s.heads,0)}</div>
+            </div>
+
+            <div class="card">
+                <div class="cardTitle">Яйця</div>
+                <div class="cardValue">${fmt(s.eggs,0)}</div>
+            </div>
+
+            <div class="card">
+                <div class="cardTitle">Корм</div>
+                <div class="cardValue">${fmt(s.feed)} кг</div>
+            </div>
+
+            <div class="card">
+                <div class="cardTitle">Падіж</div>
+                <div class="cardValue">${fmt(s.mortality,0)}</div>
+            </div>
+
+        </div>
+
+        <div class="panel">
+            <h2>Щоденний облік</h2>
+
+            <div class="tableWrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Голів</th>
+                            <th>Падіж</th>
+                            <th>Яйця</th>
+                            <th>Корм</th>
+                            <th>Вода</th>
+                            <th>Дії</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    ${s.daily.map(d=>`
+
+                        <tr>
+                            <td>${d.record_date}</td>
+                            <td>${fmt(d.heads,0)}</td>
+                            <td>${fmt(d.mortality,0)}</td>
+                            <td>${fmt(d.eggs,0)}</td>
+                            <td>${fmt(d.feed_kg)} кг</td>
+                            <td>${fmt(d.water_liters)} л</td>
+                            <td>
+                                <button class="secondary small" onclick="editLayerDaily('${flockId}','${d.id}')">Ред.</button> <button class="secondary small" onclick="editLayerDaily('${flockId}','${d.id}')">Ред.</button> <button class="danger small" onclick="deleteLayerDaily('${d.id}')">Видалити</button>
+                            </td>
+                        </tr>
+
+                    `).join('')||`<tr><td colspan="7" class="empty">Немає записів</td></tr>`}
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    `;
+
+}
+
+
+async function openLayerDailyModal(flockId){
+
+    const f=flocks.find(x=>x.id===flockId);
+
+    openModal(
+        'Щоденний облік курей',
+        `
+
+        <div class="formGrid">
+
+            <div>
+                <label>Дата</label>
+                <input id="ldDate" type="date" value="${today()}">
+            </div>
+
+            <div>
+                <label>Голів</label>
+                <input id="ldHeads" type="number" value="${f?.current_heads||0}">
+            </div>
+
+            <div>
+                <label>Падіж</label>
+                <input id="ldMortality" type="number" value="0">
+            </div>
+
+            <div>
+                <label>Яйця</label>
+                <input id="ldEggs" type="number" value="0">
+            </div>
+
+            <div>
+                <label>Корм, кг</label>
+                <input id="ldFeed" type="number" step="0.01" value="0">
+            </div>
+
+            <div>
+                <label>Вода, л</label>
+                <input id="ldWater" type="number" step="0.01" value="0">
+            </div>
+
+            <div class="formFull">
+                <label>Примітки</label>
+                <textarea id="ldNotes"></textarea>
+            </div>
+
+        </div>
+
+        <div class="modalFooter">
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+            <button class="primary" onclick="saveLayerDaily('${flockId}')">Зберегти</button>
+        </div>
+
+        `
+    );
+
+}
+
+
+async function saveLayerDaily(flockId){
+
+    try{
+
+        const payload={
+            user_id:currentUser.id,
+            flock_id:flockId,
+            record_date:$('ldDate').value,
+            heads:safeNum($('ldHeads').value),
+            mortality:safeNum($('ldMortality').value),
+            eggs:safeNum($('ldEggs').value),
+            feed_kg:safeNum($('ldFeed').value),
+            water_liters:safeNum($('ldWater').value),
+            notes:$('ldNotes').value.trim()
+        };
+
+        const {error}=await supabaseClient
+            .from('layer_daily')
+            .insert(payload);
+
+        if(error)throw error;
+
+        closeModal();
+
+        await loadAll();
+
+        await selectLayer(flockId);
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+async function deleteLayerDaily(id){
+
+    if(!confirm('Видалити запис?'))return;
+
+    try{
+
+        const {error}=await supabaseClient
+            .from('layer_daily')
+            .delete()
+            .eq('id',id)
+            .eq('user_id',currentUser.id);
+
+        if(error)throw error;
+
+        if(selectedFlock)await selectLayer(selectedFlock);
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+/* =========================================================
+   FEED
+========================================================= */
+
+async function loadIngredients(){
+
+    const {data,error}=await supabaseClient
+        .from('ingredients')
+        .select('*')
+        .eq('user_id',currentUser.id)
+        .order('name');
+
+    if(error)throw error;
+
+    ingredients=data||[];
+
+}
+
+
+async function loadRecipes(){
+
+    const {data,error}=await supabaseClient
+        .from('feed_recipes')
+        .select('*')
+        .eq('user_id',currentUser.id)
+        .order('name');
+
+    if(error)throw error;
+
+    recipes=data||[];
+
+}
+
+
+function renderFeed(){
+
+    $('ingredientsTable').innerHTML=
+        ingredients.length
+        ?ingredients.map(i=>`
+
+        <tr>
+            <td><strong>${escapeHtml(i.name)}</strong></td>
+            <td>${fmt(i.price_per_kg)} грн</td>
+            <td>
+                <button class="secondary small" onclick="editIngredient('${i.id}')">Ред.</button>
+                <button class="danger small" onclick="deleteIngredient('${i.id}')">Видалити</button>
+            </td>
+        </tr>
+
+        `).join('')
+        :`<tr><td colspan="3" class="empty">Інгредієнтів ще немає</td></tr>`;
+
+
+    $('recipesTable').innerHTML=
+        recipes.length
+        ?recipes.map(r=>`
+
+        <tr>
+            <td><strong>${escapeHtml(r.name)}</strong></td>
+            <td>${escapeHtml(feedPhaseName(r.phase))}</td>
+            <td>
+                <button class="secondary small" onclick="viewRecipe('${r.id}')">
+                    Склад
+                </button>
+            </td>
+            <td id="recipeCost-${r.id}">...</td>
+            <td>
+                <button class="secondary small" onclick="editRecipe('${r.id}')">Ред.</button>
+                <button class="danger small" onclick="deleteRecipe('${r.id}')">Видалити</button>
+            </td>
+        </tr>
+
+        `).join('')
+        :`<tr><td colspan="5" class="empty">Рецептів ще немає</td></tr>`;
+
+    recipes.forEach(r=>calculateRecipeCost(r.id));
+
+}
+
+
+function feedPhaseName(phase){
+
+    const names={
+        starter:'Стартер 1–15',
+        g15_20:'Гровер 15–20',
+        g21_28:'Гровер 21–28',
+        g29_35:'Гровер 29–35',
+        f36_42:'Фініш 36–42',
+        f43_50:'Фініш 43–50',
+        layer_growing:'Кури: Вирощування 1–140',
+        layer_laying:'Кури: Кладка 140+'
+    };
+
+    return names[phase]||phase;
+
+}
+
+
+function openIngredientModal(item=null){
+
+    openModal(
+        item?'Редагування інгредієнта':'Новий інгредієнт',
+        `
+
+        <div class="formGroup">
+            <label>Назва</label>
+            <input id="ingName" value="${escapeHtml(item?.name||'')}">
+        </div>
+
+        <div class="formGroup">
+            <label>Ціна за кг, грн</label>
+            <input id="ingPrice" type="number" step="0.01" value="${item?.price_per_kg??0}">
+        </div>
+
+        <div class="modalFooter">
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+            <button class="primary" onclick="saveIngredient('${item?.id||''}')">
+                Зберегти
+            </button>
+        </div>
+
+        `
+    );
+
+}
+
+
+async function saveIngredient(id){
+
+    try{
+
+        const payload={
+            user_id:currentUser.id,
+            name:$('ingName').value.trim(),
+            price_per_kg:safeNum($('ingPrice').value)
+        };
+
+        if(!payload.name){
+            showToast('Введіть назву');
+            return;
+        }
+
+        let error;
+
+        if(id){
+
+            ({error}=await supabaseClient
+                .from('ingredients')
+                .update(payload)
+                .eq('id',id)
+                .eq('user_id',currentUser.id));
+
+        }else{
+
+            ({error}=await supabaseClient
+                .from('ingredients')
+                .insert(payload));
+
+        }
+
+        if(error)throw error;
+
+        closeModal();
+
+        await loadAll();
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+function editIngredient(id){
+
+    const i=ingredients.find(x=>x.id===id);
+
+    if(i)openIngredientModal(i);
+
+}
+
+
+async function deleteIngredient(id){
+
+    if(!confirm('Видалити інгредієнт?'))return;
+
+    try{
+
+        const {error}=await supabaseClient
+            .from('ingredients')
+            .delete()
+            .eq('id',id)
+            .eq('user_id',currentUser.id);
+
+        if(error)throw error;
+
+        await loadAll();
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+function recipePhases(){
+
+    return [
+
+        ['starter','Стартер 1–15'],
+        ['g15_20','Гровер 15–20'],
+        ['g21_28','Гровер 21–28'],
+        ['g29_35','Гровер 29–35'],
+        ['f36_42','Фініш 36–42'],
+        ['f43_50','Фініш 43–50'],
+        ['layer_growing','Кури: Вирощування 1–140'],
+        ['layer_laying','Кури: Кладка 140+']
+
+    ];
+
+}
+
+
+function openRecipeModal(recipe=null){
+
+    const rows=ingredients.map(i=>`
+
+        <option value="${i.id}">
+            ${escapeHtml(i.name)} — ${fmt(i.price_per_kg)} грн/кг
+        </option>
+
+    `).join('');
+
+    openModal(
+        recipe?'Редагування рецепта':'Новий рецепт',
+        `
+
+        <div class="formGrid">
+
+            <div>
+                <label>Назва рецепта</label>
+                <input id="rfName" value="${escapeHtml(recipe?.name||'')}">
+            </div>
+
+            <div>
+                <label>Період</label>
+
+                <select id="rfPhase">
+
+                    ${recipePhases().map(x=>`
+
+                        <option value="${x[0]}"
+                            ${recipe?.phase===x[0]?'selected':''}>
+                            ${x[1]}
+                        </option>
+
+                    `).join('')}
+
+                </select>
+            </div>
+
+            <div class="formFull">
+                <label>Примітки</label>
+                <textarea id="rfNotes">${escapeHtml(recipe?.notes||'')}</textarea>
+            </div>
+
+        </div>
+
+        <h3>Склад рецепта</h3>
+
+        <div id="recipeItems"></div>
+
+        <button class="secondary" onclick="addRecipeItem()">
+            + Додати інгредієнт
+        </button>
+
+        <div class="modalFooter">
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+            <button class="primary" onclick="saveRecipe('${recipe?.id||''}')">
+                Зберегти рецепт
+            </button>
+        </div>
+
+        `
+    );
+
+    if(recipe){
+        loadRecipeItemsIntoForm(recipe.id);
+    }else{
+        addRecipeItem();
+    }
+
+}
+
+
+function addRecipeItem(data={}){
+
+    const container=$('recipeItems');
+
+    if(!container)return;
+
+    const div=document.createElement('div');
+
+    div.className='recipeItem';
+
+    div.innerHTML=`
+
+        <div>
+            <label>Інгредієнт</label>
+
+            <select class="recipeIngredient">
+
+                ${ingredients.map(i=>`
+
+                    <option value="${i.id}"
+                        ${data.ingredient_id===i.id?'selected':''}>
+                        ${escapeHtml(i.name)}
+                    </option>
+
+                `).join('')}
+
+            </select>
+        </div>
+
+        <div>
+            <label>Кг</label>
+            <input class="recipeKg" type="number" step="0.001"
+                value="${data.kg??0}">
+        </div>
+
+        <div>
+            <label>Ціна/кг</label>
+            <input class="recipePrice" type="number" step="0.01"
+                value="${data.price_per_kg??0}">
+        </div>
+
+        <button class="danger" onclick="this.parentElement.remove()">
+            ×
+        </button>
+
+    `;
+
+    container.appendChild(div);
+
+    const select=div.querySelector('.recipeIngredient');
+    const price=div.querySelector('.recipePrice');
+
+    function sync(){
+
+        const ing=ingredients.find(x=>x.id===select.value);
+
+        if(ing)price.value=ing.price_per_kg;
+
+    }
+
+    select.addEventListener('change',sync);
+
+    if(!data.price_per_kg)sync();
+
+}
+
+
+async function loadRecipeItemsIntoForm(recipeId){
+
+    try{
+
+        const {data,error}=await supabaseClient
+            .from('feed_recipe_items')
+            .select('*')
+            .eq('recipe_id',recipeId)
+            .order('created_at');
+
+        if(error)throw error;
+
+        $('recipeItems').innerHTML='';
+
+        (data||[]).forEach(x=>{
+
+            addRecipeItem({
+                ingredient_id:x.ingredient_id,
+                kg:x.kg,
+                price_per_kg:x.price_per_kg
+            });
+
+        });
+
+        if(!(data||[]).length)addRecipeItem();
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+async function saveRecipe(id){
+
+    try{
+
+        const name=$('rfName').value.trim();
+
+        if(!name){
+            showToast('Введіть назву рецепта');
+            return;
+        }
+
+        const payload={
+            user_id:currentUser.id,
+            name,
+            phase:$('rfPhase').value,
+            notes:$('rfNotes').value.trim()
+        };
+
+        let recipeId=id;
+
+        if(id){
+
+            const {error}=await supabaseClient
+                .from('feed_recipes')
+                .update(payload)
+                .eq('id',id)
+                .eq('user_id',currentUser.id);
+
+            if(error)throw error;
+
+            const {error:deleteError}=await supabaseClient
+                .from('feed_recipe_items')
+                .delete()
+                .eq('recipe_id',id);
+
+            if(deleteError)throw deleteError;
+
+        }else{
+
+            const {data,error}=await supabaseClient
+                .from('feed_recipes')
+                .insert(payload)
+                .select()
+                .single();
+
+            if(error)throw error;
+
+            recipeId=data.id;
+
+        }
+
+        const items=[];
+
+        document.querySelectorAll('#recipeItems .recipeItem')
+            .forEach(row=>{
+
+                const ingredientId=
+                    row.querySelector('.recipeIngredient')?.value;
+
+                const kg=
+                    safeNum(row.querySelector('.recipeKg')?.value);
+
+                const ing=
+                    ingredients.find(x=>x.id===ingredientId);
+
+                if(ingredientId && kg>0 && ing){
+
+                    items.push({
+                        recipe_id:recipeId,
+                        ingredient_id:ingredientId,
+                        ingredient_name:ing.name,
+                        kg,
+                        price_per_kg:safeNum(ing.price_per_kg),
+                        total_cost:kg*safeNum(ing.price_per_kg)
+                    });
+
+                }
+
+            });
+
+        if(items.length){
+
+            const {error}=await supabaseClient
+                .from('feed_recipe_items')
+                .insert(items);
+
+            if(error)throw error;
+
+        }
+
+        closeModal();
+
+        await loadAll();
+
+        showToast('Рецепт збережено');
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+async function calculateRecipeCost(id){
+
+    try{
+
+        const {data,error}=await supabaseClient
+            .from('feed_recipe_items')
+            .select('*')
+            .eq('recipe_id',id);
+
+        if(error)throw error;
+
+        const items=data||[];
+
+        const totalKg=
+            items.reduce((s,x)=>s+safeNum(x.kg),0);
+
+        const totalCost=
+            items.reduce((s,x)=>
+                s+
+                safeNum(x.kg)*
+                safeNum(x.price_per_kg),
+                0
+            );
+
+        const cost=
+            totalKg>0?totalCost/totalKg:0;
+
+        const el=$('recipeCost-'+id);
+
+        if(el)el.textContent=fmt(cost)+' грн/кг';
+
+    }catch(e){
+        console.error(e);
+    }
+
+}
+
+
+async function viewRecipe(id){
+
+    try{
+
+        const r=recipes.find(x=>x.id===id);
+
+        const {data,error}=await supabaseClient
+            .from('feed_recipe_items')
+            .select('*')
+            .eq('recipe_id',id)
+            .order('created_at');
+
+        if(error)throw error;
+
+        const totalKg=(data||[])
+            .reduce((s,x)=>s+safeNum(x.kg),0);
+
+        const totalCost=(data||[])
+            .reduce((s,x)=>
+                s+
+                safeNum(x.kg)*safeNum(x.price_per_kg),
+                0
+            );
+
+        openModal(
+            'Склад рецепта',
+            `
+
+            <h3>${escapeHtml(r?.name||'')}</h3>
+
+            <p>
+                Період:
+                <strong>${escapeHtml(feedPhaseName(r?.phase))}</strong>
+            </p>
+
+            <div class="tableWrap">
+
+                <table style="min-width:0">
+
+                    <thead>
+                        <tr>
+                            <th>Інгредієнт</th>
+                            <th>Кг</th>
+                            <th>Ціна</th>
+                            <th>Вартість</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    ${(data||[]).map(x=>`
+
+                        <tr>
+                            <td>${escapeHtml(x.ingredient_name)}</td>
+                            <td>${fmt(x.kg)}</td>
+                            <td>${fmt(x.price_per_kg)} грн</td>
+                            <td>${fmt(safeNum(x.kg)*safeNum(x.price_per_kg))} грн</td>
+                        </tr>
+
+                    `).join('')}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <p>
+                Загальна маса:
+                <strong>${fmt(totalKg)} кг</strong>
+            </p>
+
+            <p>
+                Собівартість:
+                <strong>${fmt(totalKg?totalCost/totalKg:0)} грн/кг</strong>
+            </p>
+
+            `
+        );
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+function editRecipe(id){
+
+    const r=recipes.find(x=>x.id===id);
+
+    if(r)openRecipeModal(r);
+
+}
+
+
+async function deleteRecipe(id){
+
+    if(!confirm('Видалити рецепт?'))return;
+
+    try{
+
+        await supabaseClient
+            .from('feed_recipe_items')
+            .delete()
+            .eq('recipe_id',id);
+
+        const {error}=await supabaseClient
+            .from('feed_recipes')
+            .delete()
+            .eq('id',id)
+            .eq('user_id',currentUser.id);
+
+        if(error)throw error;
+
+        await loadAll();
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+/* =========================================================
+   CLIENTS
+========================================================= */
+
+async function loadClients(){
+
+    const {data,error}=await supabaseClient
+        .from('clients')
+        .select('*')
+        .eq('user_id',currentUser.id)
+        .order('name');
+
+    if(error)throw error;
+
+    clients=data||[];
+
+}
+
+
+function renderClients(){
+
+    $('clientsTable').innerHTML=
+        clients.length
+        ?clients.map(c=>`
+
+        <tr>
+
+            <td><strong>${escapeHtml(c.name)}</strong></td>
+
+            <td>
+                ${
+                    c.phone
+                    ?`<a href="tel:${escapeHtml(c.phone)}">${escapeHtml(c.phone)}</a>`
+                    :''
+                }
+            </td>
+
+            <td>${escapeHtml(c.notes||'')}</td>
+
+            <td>
+                <button class="secondary small" onclick="editClient('${c.id}')">Ред.</button>
+                <button class="danger small" onclick="deleteClient('${c.id}')">Видалити</button>
+            </td>
+
+        </tr>
+
+        `).join('')
+        :`<tr><td colspan="4" class="empty">Клієнтів ще немає</td></tr>`;
+
+}
+
+
+function openClientModal(client=null){
+
+    openModal(
+        client?'Редагування клієнта':'Новий клієнт',
+        `
+
+        <div class="formGrid">
+
+            <div>
+                <label>Ім'я</label>
+                <input id="cfName" value="${escapeHtml(client?.name||'')}">
+            </div>
+
+            <div>
+                <label>Телефон</label>
+                <input id="cfPhone" type="tel" value="${escapeHtml(client?.phone||'')}">
+            </div>
+
+            <div class="formFull">
+                <label>Примітки</label>
+                <textarea id="cfNotes">${escapeHtml(client?.notes||'')}</textarea>
+            </div>
+
+        </div>
+
+        <div class="modalFooter">
+
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+
+            <button class="primary" onclick="saveClient('${client?.id||''}')">
+                Зберегти
+            </button>
+
+        </div>
+
+        `
+    );
+
+}
+
+
+async function saveClient(id){
+
+    try{
+
+        const payload={
+            user_id:currentUser.id,
+            name:$('cfName').value.trim(),
+            phone:$('cfPhone').value.trim(),
+            notes:$('cfNotes').value.trim()
+        };
+
+        if(!payload.name){
+            showToast('Введіть ім’я клієнта');
+            return;
+        }
+
+        let error;
+
+        if(id){
+
+            ({error}=await supabaseClient
+                .from('clients')
+                .update(payload)
+                .eq('id',id)
+                .eq('user_id',currentUser.id));
+
+        }else{
+
+            ({error}=await supabaseClient
+                .from('clients')
+                .insert(payload));
+
+        }
+
+        if(error)throw error;
+
+        closeModal();
+
+        await loadAll();
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+function editClient(id){
+
+    const c=clients.find(x=>x.id===id);
+
+    if(c)openClientModal(c);
+
+}
+
+
+async function deleteClient(id){
+
+    if(!confirm('Видалити клієнта?'))return;
+
+    try{
+
+        const {error}=await supabaseClient
+            .from('clients')
+            .delete()
+            .eq('id',id)
+            .eq('user_id',currentUser.id);
+
+        if(error)throw error;
+
+        await loadAll();
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+/* =========================================================
+   FINANCE
+========================================================= */
+
+async function loadFinance(){
+
+    const {data,error}=await supabaseClient
+        .from('finance')
+        .select('*')
+        .eq('user_id',currentUser.id)
+        .order('operation_date',{ascending:false});
+
+    if(error)throw error;
+
+    finances=data||[];
+
+}
+
+
+function renderFinance(){
+
+    const income=finances
+        .filter(x=>x.operation_type==='income')
+        .reduce((s,x)=>s+safeNum(x.amount),0);
+
+    const expense=finances
+        .filter(x=>x.operation_type==='expense')
+        .reduce((s,x)=>s+safeNum(x.amount),0);
+
+    $('financeIncome').textContent=fmt(income)+' грн';
+    $('financeExpense').textContent=fmt(expense)+' грн';
+    $('financeProfit').textContent=fmt(income-expense)+' грн';
+
+    $('financeTable').innerHTML=
+        finances.length
+        ?finances.map(f=>`
+
+        <tr>
+
+            <td>${f.operation_date}</td>
+
+            <td>
+                ${
+                    f.operation_type==='income'
+                    ?'<span class="badge badgeGreen">Дохід</span>'
+                    :'<span class="badge badgeRed">Витрата</span>'
+                }
+            </td>
+
+            <td>${escapeHtml(f.category)}</td>
+
+            <td><strong>${fmt(f.amount)} грн</strong></td>
+
+            <td>${escapeHtml(f.description||'')}</td>
+
+            <td>
+                <button class="secondary small" onclick="editFinance2('${f.id}')">Ред.</button> <button class="danger small" onclick="deleteFinance('${f.id}')">Видалити</button>
+            </td>
+
+        </tr>
+
+        `).join('')
+        :`<tr><td colspan="6" class="empty">Операцій ще немає</td></tr>`;
+
+}
+
+
+function openFinanceModal(){
+
+    openModal(
+        'Фінансова операція',
+        `
+
+        <div class="formGrid">
+
+            <div>
+                <label>Тип</label>
+                <select id="ffType">
+                    <option value="expense">Витрата</option>
+                    <option value="income">Дохід</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Дата</label>
+                <input id="ffDate" type="date" value="${today()}">
+            </div>
+
+            <div>
+                <label>Категорія</label>
+                <input id="ffCategory">
+            </div>
+
+            <div>
+                <label>Сума, грн</label>
+                <input id="ffAmount" type="number" step="0.01">
+            </div>
+
+            <div class="formFull">
+                <label>Опис</label>
+                <textarea id="ffDescription"></textarea>
+            </div>
+
+        </div>
+
+        <div class="modalFooter">
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+            <button class="primary" onclick="saveFinance()">Зберегти</button>
+        </div>
+
+        `
+    );
+
+}
+
+
+async function saveFinance(){
+
+    try{
+
+        const payload={
+            user_id:currentUser.id,
+            operation_type:$('ffType').value,
+            operation_date:$('ffDate').value,
+            category:$('ffCategory').value.trim(),
+            amount:safeNum($('ffAmount').value),
+            description:$('ffDescription').value.trim()
+        };
+
+        const {error}=await supabaseClient
+            .from('finance')
+            .insert(payload);
+
+        if(error)throw error;
+
+        closeModal();
+
+        await loadAll();
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+async function deleteFinance(id){
+
+    if(!confirm('Видалити операцію?'))return;
+
+    try{
+
+        const {error}=await supabaseClient
+            .from('finance')
+            .delete()
+            .eq('id',id)
+            .eq('user_id',currentUser.id);
+
+        if(error)throw error;
+
+        await loadAll();
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+async function renderDashboard(){
+
+    const activeB=getActiveBatches();
+
+    const activeF=flocks.filter(x=>x.status==='active');
+
+    $('dashBroilerBatches').textContent=activeB.length;
+    $('dashLayerFlocks').textContent=activeF.length;
+
+    let totalB=0;
+    let totalF=0;
+
+    const bCards=[];
+
+    for(const b of activeB){
+
+        const s=await getBroilerStats(b.id);
+
+        totalB+=s.heads;
+
+        bCards.push(`
+
+        <div class="batchCard">
+
+            <h3>${escapeHtml(b.name)}</h3>
+
+            <div style="color:#6b7280;font-size:12px">
+                ${escapeHtml(b.breed||'')} ·
+                ${ageDays(b.placement_date)} днів
+            </div>
+
+            <div class="metricRow">
+
+                <div class="metric">
+                    <span>Поголів'я</span>
+                    <strong>${fmt(s.heads,0)}</strong>
+                </div>
+
+                <div class="metric">
+                    <span>Середня вага</span>
+                    <strong>${fmt(s.avgWeightG,0)} г</strong>
+                </div>
+
+                <div class="metric">
+                    <span>Маса</span>
+                    <strong>${fmt(s.liveMass)} кг</strong>
+                </div>
+
+                <div class="metric">
+                    <span>FCR</span>
+                    <strong>${s.fcr?fmt(s.fcr,3):'—'}</strong>
+                </div>
+
+            </div>
+
+            <div style="margin-top:12px">
+                <button class="secondary small"
+                    onclick="showPage('broilers',document.querySelectorAll('.nav button')[2]);selectBroiler('${b.id}')">
+                    Відкрити
+                </button>
+            </div>
+
+        </div>
+
+        `);
+
+    }
+
+    $('dashBroilerHeads').textContent=fmt(totalB,0);
+
+    $('dashboardBroilers').innerHTML=
+        bCards.length
+        ?bCards.join('')
+        :'<div class="empty">Активних партій немає</div>';
+
+
+    const fCards=[];
+
+    for(const f of activeF){
+
+        const s=await getLayerStats(f.id);
+
+        totalF+=s.heads;
+
+        fCards.push(`
+
+        <div class="batchCard">
+
+            <h3>${escapeHtml(f.name)}</h3>
+
+            <div style="color:#6b7280;font-size:12px">
+                ${escapeHtml(f.breed||'')}
+                ${f.placement_date?' · '+ageDays(f.placement_date)+' днів':''}
+            </div>
+
+            <div class="metricRow">
+
+                <div class="metric">
+                    <span>Поголів'я</span>
+                    <strong>${fmt(s.heads,0)}</strong>
+                </div>
+
+                <div class="metric">
+                    <span>Яйця</span>
+                    <strong>${fmt(s.eggs,0)}</strong>
+                </div>
+
+                <div class="metric">
+                    <span>Корм</span>
+                    <strong>${fmt(s.feed)} кг</strong>
+                </div>
+
+                <div class="metric">
+                    <span>Падіж</span>
+                    <strong>${fmt(s.mortality,0)}</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+        `);
+
+    }
+
+    $('dashLayerHeads').textContent=fmt(totalF,0);
+
+    $('dashboardLayers').innerHTML=
+        fCards.length
+        ?fCards.join('')
+        :'<div class="empty">Активних груп немає</div>';
+
+}
+
+
+/* =========================================================
+   SALES / SLAUGHTER / HOME USE
+========================================================= */
+
+async function openSaleModal(batchId){
+
+    openModal(
+        'Продаж бройлерів',
+        `
+
+        <div class="formGrid">
+
+            <div>
+                <label>Дата</label>
+                <input id="sfDate" type="date" value="${today()}">
+            </div>
+
+            <div>
+                <label>Кількість, гол.</label>
+                <input id="sfQty" type="number" value="0">
+            </div>
+
+            <div>
+                <label>Загальна маса, кг</label>
+                <input id="sfWeight" type="number" step="0.01" value="0">
+            </div>
+
+            <div>
+                <label>Ціна за кг</label>
+                <input id="sfPrice" type="number" step="0.01" value="0">
+            </div>
+
+            <div>
+                <label>Клієнт</label>
+
+                <select id="sfClient">
+
+                    <option value="">Без клієнта</option>
+
+                    ${clients.map(c=>`
+                        <option value="${c.id}">
+                            ${escapeHtml(c.name)}
+                        </option>
+                    `).join('')}
+
+                </select>
+
+            </div>
+
+            <div>
+                <label>Тип продукції</label>
+
+                <select id="sfProduct">
+                    <option value="carcass">Тушка</option>
+                    <option value="marinated">Мариноване</option>
+                </select>
+
+            </div>
+
+        </div>
+
+        <div class="modalFooter">
+
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+
+            <button class="primary" onclick="saveSale('${batchId}')">
+                Зберегти
+            </button>
+
+        </div>
+
+        `
+    );
+
+}
+
+
+async function saveSale(batchId){
+
+    try{
+
+        const weight=safeNum($('sfWeight').value);
+        const price=safeNum($('sfPrice').value);
+
+        const payload={
+            user_id:currentUser.id,
+            batch_id:batchId,
+            sale_date:$('sfDate').value,
+            quantity:safeNum($('sfQty').value),
+            total_weight_kg:weight,
+            price_per_kg:price,
+            total_amount:weight*price,
+            client_id:$('sfClient').value||null,
+            product_type:$('sfProduct').value
+        };
+
+        const {error}=await supabaseClient
+            .from('broiler_sales')
+            .insert(payload);
+
+        if(error)throw error;
+
+        closeModal();
+
+        showToast('Продаж додано');
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+async function openSlaughterModal(batchId){
+
+    openModal(
+        'Домашній забій',
+        `
+
+        <div class="formGrid">
+
+            <div>
+                <label>Дата</label>
+                <input id="hfDate" type="date" value="${today()}">
+            </div>
+
+            <div>
+                <label>Голів</label>
+                <input id="hfHeads" type="number" value="0">
+            </div>
+
+            <div>
+                <label>Середня вага, г</label>
+                <input id="hfAvg" type="number" value="0">
+            </div>
+
+            <div class="formFull">
+                <label>Примітки</label>
+                <textarea id="hfNotes"></textarea>
+            </div>
+
+        </div>
+
+        <div class="modalFooter">
+
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+
+            <button class="primary" onclick="saveSlaughter('${batchId}')">
+                Зберегти
+            </button>
+
+        </div>
+
+        `
+    );
+
+}
+
+
+async function saveSlaughter(batchId){
+
+    try{
+
+        const heads=safeNum($('hfHeads').value);
+        const avg=safeNum($('hfAvg').value);
+
+        const {error}=await supabaseClient
+            .from('broiler_home_slaughter')
+            .insert({
+                user_id:currentUser.id,
+                batch_id:batchId,
+                slaughter_date:$('hfDate').value,
+                heads,
+                average_weight_g:avg,
+                total_weight_kg:heads*avg/1000,
+                notes:$('hfNotes').value.trim()
+            });
+
+        if(error)throw error;
+
+        closeModal();
+
+        showToast('Забій записано');
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+async function openHomeUseModal(batchId){
+
+    openModal(
+        'Продаж додому / власне використання',
+        `
+
+        <div class="formGrid">
+
+            <div>
+                <label>Дата</label>
+                <input id="huDate" type="date" value="${today()}">
+            </div>
+
+            <div>
+                <label>Продукт</label>
+                <input id="huProduct" value="Бройлер">
+            </div>
+
+            <div>
+                <label>Кількість</label>
+                <input id="huQty" type="number" value="0">
+            </div>
+
+            <div>
+                <label>Маса, кг</label>
+                <input id="huWeight" type="number" step="0.01" value="0">
+            </div>
+
+            <div>
+                <label>Оціночна вартість, грн</label>
+                <input id="huValue" type="number" step="0.01" value="0">
+            </div>
+
+            <div class="formFull">
+                <label>Примітки</label>
+                <textarea id="huNotes"></textarea>
+            </div>
+
+        </div>
+
+        <div class="modalFooter">
+
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+
+            <button class="primary" onclick="saveHomeUse('${batchId}')">
+                Зберегти
+            </button>
+
+        </div>
+
+        `
+    );
+
+}
+
+
+async function saveHomeUse(batchId){
+
+    try{
+
+        const {error}=await supabaseClient
+            .from('home_uses')
+            .insert({
+                user_id:currentUser.id,
+                use_date:$('huDate').value,
+                batch_id:batchId,
+                product:$('huProduct').value.trim(),
+                quantity:safeNum($('huQty').value),
+                weight_kg:safeNum($('huWeight').value),
+                estimated_value:safeNum($('huValue').value),
+                notes:$('huNotes').value.trim()
+            });
+
+        if(error)throw error;
+
+        closeModal();
+
+        showToast('Записано');
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+async function openEggSaleModal(flockId){
+
+    openModal(
+        'Продаж яєць',
+        `
+
+        <div class="formGrid">
+
+            <div>
+                <label>Дата</label>
+                <input id="esDate" type="date" value="${today()}">
+            </div>
+
+            <div>
+                <label>Кількість яєць</label>
+                <input id="esQty" type="number" value="0">
+            </div>
+
+            <div>
+                <label>Ціна за яйце, грн</label>
+                <input id="esPrice" type="number" step="0.01" value="0">
+            </div>
+
+            <div>
+                <label>Клієнт</label>
+
+                <select id="esClient">
+
+                    <option value="">Без клієнта</option>
+
+                    ${clients.map(c=>`
+                        <option value="${c.id}">
+                            ${escapeHtml(c.name)}
+                        </option>
+                    `).join('')}
+
+                </select>
+
+            </div>
+
+        </div>
+
+        <div class="modalFooter">
+
+            <button class="secondary" onclick="closeModal()">Скасувати</button>
+
+            <button class="primary" onclick="saveEggSale('${flockId}')">
+                Зберегти
+            </button>
+
+        </div>
+
+        `
+    );
+
+}
+
+
+async function saveEggSale(flockId){
+
+    try{
+
+        const qty=safeNum($('esQty').value);
+        const price=safeNum($('esPrice').value);
+
+        const {error}=await supabaseClient
+            .from('egg_sales')
+            .insert({
+                user_id:currentUser.id,
+                sale_date:$('esDate').value,
+                client_id:$('esClient').value||null,
+                quantity:qty,
+                price_per_egg:price,
+                total_amount:qty*price
+            });
+
+        if(error)throw error;
+
+        closeModal();
+
+        showToast('Продаж яєць записано');
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+/* =========================================================
+   REPORTS
+========================================================= */
+
+function renderReports(){
+
+    $('reportBatchSelect').innerHTML=
+
+        `<option value="">Оберіть партію</option>`+
+
+        batches.map(b=>`
+
+            <option value="${b.id}">
+                ${escapeHtml(b.name)}
+                ${b.status==='active'?'(активна)':'(архів)'}
+            </option>
+
+        `).join('');
+
+}
+
+
+async function generateBroilerReport(){
+
+    const id=$('reportBatchSelect').value;
+
+    if(!id){
+        showToast('Оберіть партію');
+        return;
+    }
+
+    try{
+
+        const b=batches.find(x=>x.id===id);
+
+        const s=await getBroilerStats(id);
+
+        const {data:sales,error:salesError}=await supabaseClient
+            .from('broiler_sales')
+            .select('*')
+            .eq('user_id',currentUser.id)
+            .eq('batch_id',id)
+            .order('sale_date');
+
+        if(salesError)throw salesError;
+
+        const {data:slaughter,error:slaughterError}=await supabaseClient
+            .from('broiler_home_slaughter')
+            .select('*')
+            .eq('user_id',currentUser.id)
+            .eq('batch_id',id)
+            .order('slaughter_date');
+
+        if(slaughterError)throw slaughterError;
+
+        const {data:home,error:homeError}=await supabaseClient
+            .from('home_uses')
+            .select('*')
+            .eq('user_id',currentUser.id)
+            .eq('batch_id',id)
+            .order('use_date');
+
+        if(homeError)throw homeError;
+
+        const chickCost=
+            safeNum(b.initial_heads)*
+            safeNum(b.chick_price);
+
+        const feedCost=0;
+
+        const treatmentCost=s.medicineCost;
+
+        const revenue=(sales||[])
+            .reduce((sum,x)=>sum+safeNum(x.total_amount),0);
+
+        const homeValue=(home||[])
+            .reduce((sum,x)=>sum+safeNum(x.estimated_value),0);
+
+        const totalRevenue=revenue+homeValue;
+
+        const report=`
+
+        <div class="panel reportBox">
+
+            <div class="reportHeader">
+
+                <div>
+                    <h1 style="margin:0">FERMA PRO</h1>
+                    <div>Звіт по партії бройлерів</div>
+                </div>
+
+                <div>
+                    Дата звіту: ${today()}
+                </div>
+
+            </div>
+
+            <h2>1. Основна інформація</h2>
+
+            <table class="reportTable">
+
+                <tr>
+                    <th>Партія</th>
+                    <td>${escapeHtml(b.name)}</td>
+                </tr>
+
+                <tr>
+                    <th>Порода</th>
+                    <td>${escapeHtml(b.breed||'')}</td>
+                </tr>
+
+                <tr>
+                    <th>Дата посадки</th>
+                    <td>${b.placement_date}</td>
+                </tr>
+
+                <tr>
+                    <th>Вік</th>
+                    <td>${ageDays(b.placement_date)} днів</td>
+                </tr>
+
+                <tr>
+                    <th>Початкове поголів'я</th>
+                    <td>${fmt(b.initial_heads,0)}</td>
+                </tr>
+
+                <tr>
+                    <th>Поточне поголів'я</th>
+                    <td>${fmt(s.heads,0)}</td>
+                </tr>
+
+                <tr>
+                    <th>Падіж</th>
+                    <td>${fmt(s.mortality,0)}</td>
+                </tr>
+
+            </table>
+
+            <h2>2. Вага та FCR</h2>
+
+            <table class="reportTable">
+
+                <tr>
+                    <th>Середня вага</th>
+                    <td>${fmt(s.avgWeightG,0)} г</td>
+                </tr>
+
+                <tr>
+                    <th>Жива маса</th>
+                    <td>${fmt(s.liveMass)} кг</td>
+                </tr>
+
+                <tr>
+                    <th>Загальний корм</th>
+                    <td>${fmt(s.totalFeed)} кг</td>
+                </tr>
+
+                <tr>
+                    <th>FCR</th>
+                    <td>${s.fcr?fmt(s.fcr,3):'—'}</td>
+                </tr>
+
+                <tr>
+                    <th>Метод FCR</th>
+                    <td>${s.fcrType||'Немає достатніх даних'}</td>
+                </tr>
+
+            </table>
+
+            <h2>3. Зважування</h2>
+
+            <table class="reportTable">
+
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>День</th>
+                        <th>Кількість</th>
+                        <th>Середня вага</th>
+                        <th>Маса</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    ${(s.weights||[]).map(x=>`
+
+                    <tr>
+                        <td>${x.weight_date}</td>
+                        <td>${x.growing_day??''}</td>
+                        <td>${fmt(x.weighed_heads,0)}</td>
+                        <td>${fmt(x.average_weight_g,0)} г</td>
+                        <td>${fmt(x.total_weight_kg)} кг</td>
+                    </tr>
+
+                    `).join('')}
+
+                </tbody>
+
+            </table>
+
+            <h2>4. Лікування</h2>
+
+            <table class="reportTable">
+
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Препарат</th>
+                        <th>Мл</th>
+                        <th>Ціна/10 мл</th>
+                        <th>Вартість</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    ${(s.treatments||[]).map(x=>`
+
+                    <tr>
+                        <td>${x.treatment_date}</td>
+                        <td>${escapeHtml(x.medicine_name)}</td>
+                        <td>${fmt(x.ml_used)} мл</td>
+                        <td>${fmt(x.price_per_10ml)} грн</td>
+                        <td>${fmt(safeNum(x.ml_used)/10*safeNum(x.price_per_10ml))} грн</td>
+                    </tr>
+
+                    `).join('')}
+
+                </tbody>
+
+            </table>
+
+            <h2>5. Реалізація</h2>
+
+            <table class="reportTable">
+
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Кількість</th>
+                        <th>Маса</th>
+                        <th>Ціна/кг</th>
+                        <th>Сума</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    ${(sales||[]).map(x=>`
+
+                    <tr>
+                        <td>${x.sale_date}</td>
+                        <td>${fmt(x.quantity,0)}</td>
+                        <td>${fmt(x.total_weight_kg)} кг</td>
+                        <td>${fmt(x.price_per_kg)} грн</td>
+                        <td>${fmt(x.total_amount)} грн</td>
+                    </tr>
+
+                    `).join('')}
+
+                </tbody>
+
+            </table>
+
+            <h2>6. Домашній забій</h2>
+
+            <table class="reportTable">
+
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Голів</th>
+                        <th>Маса</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    ${(slaughter||[]).map(x=>`
+
+                    <tr>
+                        <td>${x.slaughter_date}</td>
+                        <td>${fmt(x.heads,0)}</td>
+                        <td>${fmt(x.total_weight_kg)} кг</td>
+                    </tr>
+
+                    `).join('')}
+
+                </tbody>
+
+            </table>
+
+            <h2>7. Власне використання</h2>
+
+            <table class="reportTable">
+
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Продукт</th>
+                        <th>Маса</th>
+                        <th>Оціночна вартість</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    ${(home||[]).map(x=>`
+
+                    <tr>
+                        <td>${x.use_date}</td>
+                        <td>${escapeHtml(x.product)}</td>
+                        <td>${fmt(x.weight_kg)} кг</td>
+                        <td>${fmt(x.estimated_value)} грн</td>
+                    </tr>
+
+                    `).join('')}
+
+                </tbody>
+
+            </table>
+
+            <h2>8. Фінансовий підсумок</h2>
+
+            <table class="reportTable">
+
+                <tr>
+                    <th>Вартість курчат</th>
+                    <td>${fmt(chickCost)} грн</td>
+                </tr>
+
+                <tr>
+                    <th>Корм</th>
+                    <td>${fmt(feedCost)} грн</td>
+                </tr>
+
+                <tr>
+                    <th>Лікування</th>
+                    <td>${fmt(treatmentCost)} грн</td>
+                </tr>
+
+                <tr>
+                    <th>Дохід від продажів</th>
+                    <td>${fmt(revenue)} грн</td>
+                </tr>
+
+                <tr>
+                    <th>Власне використання</th>
+                    <td>${fmt(homeValue)} грн</td>
+                </tr>
+
+                <tr>
+                    <th>Загальний дохід</th>
+                    <td><strong>${fmt(totalRevenue)} грн</strong></td>
+                </tr>
+
+            </table>
+
+            <div style="margin-top:30px">
+
+                <button class="primary"
+                    onclick="printReport()">
+                    🖨 Друкувати звіт
+                </button>
+
+            </div>
+
+        </div>
+
+        `;
+
+        $('reportPreview').innerHTML=report;
+
+    }catch(e){
+        showError(e);
+    }
+
+}
+
+
+function printReport(){
+
+    const content=$('reportPreview').innerHTML;
+
+    const win=window.open('','_blank');
+
+    win.document.write(`
+
+    <!DOCTYPE html>
+
+    <html lang="uk">
+
+    <head>
+
+        <meta charset="UTF-8">
+
+        <title>FERMA PRO — Звіт</title>
+
+        <style>
+
+            body{
+                font-family:Arial,sans-serif;
+                padding:30px;
+                color:#111;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+                margin-bottom:25px;
+            }
+
+            th,td{
+                border:1px solid #777;
+                padding:7px;
+                text-align:left;
+            }
+
+            h1,h2{
+                margin-top:25px;
+            }
+
+            button{
+                padding:10px 15px;
+            }
+
+            @media print{
+                button{display:none}
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        ${content}
+
+        <script>
+            window.onload=function(){
+                setTimeout(function(){
+                    window.print();
+                },500);
+            }
+        <\/script>
+
+    </body>
+
+    </html>
+
+    `);
+
+    win.document.close();
+
+}
+
+
+/* =========================================================
+   END
+========================================================= */
+
+/* FERMA PRO PLUS */
+function phaseForBroilerDay(d){d=safeNum(d);return d<=15?'starter':d<=20?'g15_20':d<=28?'g21_28':d<=35?'g29_35':d<=42?'f36_42':'f43_50'}
+function phaseForLayerDay(d){return safeNum(d)<=140?'layer_growing':'layer_laying'}
+function recipeForPhase2(p){return recipes.find(r=>r.phase===p)||null}
+async function recipeCost2(id){if(!id)return 0;const r=await supabaseClient.from('feed_recipe_items').select('kg,price_per_kg').eq('recipe_id',id);if(r.error)throw r.error;const a=r.data||[],kg=a.reduce((s,x)=>s+safeNum(x.kg),0),c=a.reduce((s,x)=>s+safeNum(x.kg)*safeNum(x.price_per_kg),0);return kg?c/kg:0}
+async function feedRecommendation(type,date){const d=ageDays(date),p=type==='broiler'?phaseForBroilerDay(d):phaseForLayerDay(d),r=recipeForPhase2(p);let c=0;if(r)try{c=await recipeCost2(r.id)}catch(e){}return `<div class="panel"><h2>🌾 Рекомендований корм</h2><div class="grid3"><div class="metric"><span>День</span><strong>${d}</strong></div><div class="metric"><span>Фаза</span><strong>${escapeHtml(feedPhaseName(p))}</strong></div><div class="metric"><span>Рецепт</span><strong>${r?escapeHtml(r.name):'Не задано'}</strong></div></div>${c?`<div class="cardHint">Собівартість рецепта: <strong>${fmt(c)} грн/кг</strong></div>`:''}</div>`}
+function footer2(fn){return `<div class="modalFooter"><button class="secondary" onclick="closeModal()">Скасувати</button><button class="primary" onclick="${fn}">Зберегти</button></div>`}
+async function editDaily(batchId,id){const r=await supabaseClient.from('broiler_daily').select('*').eq('id',id).eq('user_id',currentUser.id).single();if(r.error)return showError(r.error);const d=r.data;openModal('Редагування щоденного обліку',`<div class="formGrid"><div><label>Дата</label><input id="xDate" type="date" value="${d.record_date}"></div><div><label>Голів</label><input id="xHeads" type="number" value="${d.heads??0}"></div><div><label>Падіж</label><input id="xMort" type="number" value="${d.mortality??0}"></div><div><label>Корм, кг</label><input id="xFeed" type="number" step="0.01" value="${d.feed_kg??0}"></div><div><label>Вода, л</label><input id="xWater" type="number" step="0.01" value="${d.water_liters??0}"></div><div><label>Препарат</label><input id="xMed" value="${escapeHtml(d.medicine||'')}"></div><div class="formFull"><label>Примітки</label><textarea id="xNotes">${escapeHtml(d.notes||'')}</textarea></div></div>${footer2(`saveDailyEdit('${batchId}','${id}')`)}`)}
+async function saveDailyEdit(batchId,id){try{const p={record_date:$('xDate').value,heads:safeNum($('xHeads').value),mortality:safeNum($('xMort').value),feed_kg:safeNum($('xFeed').value),water_liters:safeNum($('xWater').value),medicine:$('xMed').value.trim(),notes:$('xNotes').value.trim()};const r=await supabaseClient.from('broiler_daily').update(p).eq('id',id).eq('user_id',currentUser.id);if(r.error)throw r.error;closeModal();await selectBroiler(batchId);showToast('Запис змінено')}catch(e){showError(e)}}
+async function editWeight(batchId,id){const r=await supabaseClient.from('broiler_weights').select('*').eq('id',id).eq('user_id',currentUser.id).single();if(r.error)return showError(r.error);const d=r.data;openModal('Редагування зважування',`<div class="formGrid"><div><label>Дата</label><input id="xwDate" type="date" value="${d.weight_date}"></div><div><label>День</label><input id="xwDay" type="number" value="${d.growing_day??0}"></div><div><label>Зважено</label><input id="xwHeads" type="number" value="${d.weighed_heads??0}"></div><div><label>Середня вага, г</label><input id="xwAvg" type="number" step="0.1" value="${d.average_weight_g??0}"></div><div><label>Мін., г</label><input id="xwMin" type="number" value="${d.min_weight_g??''}"></div><div><label>Макс., г</label><input id="xwMax" type="number" value="${d.max_weight_g??''}"></div><div class="formFull"><label>Примітки</label><textarea id="xwNotes">${escapeHtml(d.notes||'')}</textarea></div></div>${footer2(`saveWeightEdit('${batchId}','${id}')`)}`)}
+async function saveWeightEdit(batchId,id){try{const h=safeNum($('xwHeads').value),a=safeNum($('xwAvg').value),p={weight_date:$('xwDate').value,growing_day:safeNum($('xwDay').value),weighed_heads:h,average_weight_g:a,min_weight_g:safeNum($('xwMin').value)||null,max_weight_g:safeNum($('xwMax').value)||null,total_weight_kg:h*a/1000,notes:$('xwNotes').value.trim()};const r=await supabaseClient.from('broiler_weights').update(p).eq('id',id).eq('user_id',currentUser.id);if(r.error)throw r.error;closeModal();await selectBroiler(batchId);showToast('Зважування змінено')}catch(e){showError(e)}}
+async function editTreatment(batchId,id){const r=await supabaseClient.from('broiler_treatments').select('*').eq('id',id).eq('user_id',currentUser.id).single();if(r.error)return showError(r.error);const d=r.data;openModal('Редагування лікування',`<div class="formGrid"><div><label>Дата</label><input id="xtDate" type="date" value="${d.treatment_date}"></div><div><label>День</label><input id="xtDay" type="number" value="${d.growing_day??0}"></div><div><label>Препарат</label><input id="xtMed" value="${escapeHtml(d.medicine_name||'')}"></div><div><label>Мл</label><input id="xtMl" type="number" step="0.01" value="${d.ml_used??0}"></div><div><label>Ціна/10 мл</label><input id="xtPrice" type="number" step="0.01" value="${d.price_per_10ml??0}"></div><div class="formFull"><label>Примітки</label><textarea id="xtNotes">${escapeHtml(d.notes||'')}</textarea></div></div>${footer2(`saveTreatmentEdit('${batchId}','${id}')`)}`)}
+async function saveTreatmentEdit(batchId,id){try{const ml=safeNum($('xtMl').value),p=safeNum($('xtPrice').value),r=await supabaseClient.from('broiler_treatments').update({treatment_date:$('xtDate').value,growing_day:safeNum($('xtDay').value),medicine_name:$('xtMed').value.trim(),ml_used:ml,price_per_10ml:p,total_cost:ml*p/10,notes:$('xtNotes').value.trim()}).eq('id',id).eq('user_id',currentUser.id);if(r.error)throw r.error;closeModal();await selectBroiler(batchId);showToast('Лікування змінено')}catch(e){showError(e)}}
+async function editLayerDaily(flockId,id){const r=await supabaseClient.from('layer_daily').select('*').eq('id',id).eq('user_id',currentUser.id).single();if(r.error)return showError(r.error);const d=r.data;openModal('Редагування обліку курей',`<div class="formGrid"><div><label>Дата</label><input id="xlDate" type="date" value="${d.record_date}"></div><div><label>Голів</label><input id="xlHeads" type="number" value="${d.heads??0}"></div><div><label>Падіж</label><input id="xlMort" type="number" value="${d.mortality??0}"></div><div><label>Яйця</label><input id="xlEggs" type="number" value="${d.eggs??0}"></div><div><label>Корм, кг</label><input id="xlFeed" type="number" step="0.01" value="${d.feed_kg??0}"></div><div><label>Вода, л</label><input id="xlWater" type="number" step="0.01" value="${d.water_liters??0}"></div><div class="formFull"><label>Примітки</label><textarea id="xlNotes">${escapeHtml(d.notes||'')}</textarea></div></div>${footer2(`saveLayerDailyEdit('${flockId}','${id}')`)}`)}
+async function saveLayerDailyEdit(flockId,id){try{const r=await supabaseClient.from('layer_daily').update({record_date:$('xlDate').value,heads:safeNum($('xlHeads').value),mortality:safeNum($('xlMort').value),eggs:safeNum($('xlEggs').value),feed_kg:safeNum($('xlFeed').value),water_liters:safeNum($('xlWater').value),notes:$('xlNotes').value.trim()}).eq('id',id).eq('user_id',currentUser.id);if(r.error)throw r.error;closeModal();await loadAll();await selectLayer(flockId);showToast('Запис курей змінено')}catch(e){showError(e)}}
+async function editFinance2(id){const f=finances.find(x=>x.id===id);if(!f)return;openModal('Редагування витрати/доходу',`<div class="formGrid"><div><label>Тип</label><select id="xfType"><option value="expense" ${f.operation_type==='expense'?'selected':''}>Витрата</option><option value="income" ${f.operation_type==='income'?'selected':''}>Дохід</option></select></div><div><label>Дата</label><input id="xfDate" type="date" value="${f.operation_date}"></div><div><label>Категорія</label><input id="xfCat" value="${escapeHtml(f.category||'')}"></div><div><label>Сума</label><input id="xfAmount" type="number" step="0.01" value="${f.amount??0}"></div><div class="formFull"><label>Опис</label><textarea id="xfDesc">${escapeHtml(f.description||'')}</textarea></div></div>${footer2(`saveFinanceEdit('${id}')`)}`)}
+async function saveFinanceEdit(id){try{const r=await supabaseClient.from('finance').update({operation_type:$('xfType').value,operation_date:$('xfDate').value,category:$('xfCat').value.trim(),amount:safeNum($('xfAmount').value),description:$('xfDesc').value.trim()}).eq('id',id).eq('user_id',currentUser.id);if(r.error)throw r.error;closeModal();await loadAll();showToast('Операцію змінено')}catch(e){showError(e)}}
+async function openDrinkingModal(batchId,id=''){let d=null;if(id){const r=await supabaseClient.from('broiler_drinking_program').select('*').eq('id',id).eq('user_id',currentUser.id).single();if(r.error)return showError(r.error);d=r.data}const b=batches.find(x=>x.id===batchId);openModal(d?'Редагування випоювання':'Нове випоювання',`<div class="formGrid"><div><label>День</label><input id="xdDay" type="number" value="${d?.growing_day??ageDays(b?.placement_date)}"></div><div><label>Продукт</label><input id="xdProduct" value="${escapeHtml(d?.product_name||'Звичайна вода')}"></div><div><label>Дозування</label><input id="xdDose" value="${escapeHtml(d?.dosage||'')}"></div><div><label>Вода, л</label><input id="xdWater" type="number" step="0.01" value="${d?.water_liters??0}"></div><div class="formFull"><label>Рекомендація</label><textarea id="xdRec">${escapeHtml(d?.recommendation||'')}</textarea></div><div class="formFull"><label>Примітки</label><textarea id="xdNotes">${escapeHtml(d?.notes||'')}</textarea></div></div>${footer2(`saveDrinking('${batchId}','${id}')`)}`)}
+async function saveDrinking(batchId,id){try{const p={user_id:currentUser.id,batch_id:batchId,growing_day:safeNum($('xdDay').value),product_name:$('xdProduct').value.trim()||'Звичайна вода',dosage:$('xdDose').value.trim(),water_liters:safeNum($('xdWater').value),recommendation:$('xdRec').value.trim(),notes:$('xdNotes').value.trim()};const r=id?await supabaseClient.from('broiler_drinking_program').update(p).eq('id',id).eq('user_id',currentUser.id):await supabaseClient.from('broiler_drinking_program').insert(p);if(r.error)throw r.error;closeModal();await showDrinking(batchId);showToast(id?'Випоювання змінено':'Випоювання додано')}catch(e){showError(e)}}
+async function deleteDrinking(batchId,id){if(!confirm('Видалити випоювання?'))return;const r=await supabaseClient.from('broiler_drinking_program').delete().eq('id',id).eq('user_id',currentUser.id);if(r.error)return showError(r.error);await showDrinking(batchId)}
+async function showDrinking(batchId){const h=$('drinkingBox-'+batchId);if(!h)return;const r=await supabaseClient.from('broiler_drinking_program').select('*').eq('user_id',currentUser.id).eq('batch_id',batchId).order('growing_day');if(r.error){h.innerHTML=`<div class="panel"><h2>💧 Випоювання</h2><div class="empty">Таблиця broiler_drinking_program недоступна.</div></div>`;return}const b=batches.find(x=>x.id===batchId),day=ageDays(b?.placement_date),cur=(r.data||[]).find(x=>safeNum(x.growing_day)===day);h.innerHTML=`<div class="panel"><div class="pageHeader"><div><h2>💧 Рекомендована випойка</h2><p>День ${day}</p></div><button class="primary" onclick="openDrinkingModal('${batchId}')">+ Додати</button></div><div class="card"><strong>${cur?escapeHtml(cur.product_name):'Звичайна вода'}</strong>${cur?.dosage?`<div>${escapeHtml(cur.dosage)}</div>`:''}${cur?.water_liters?`<div>Вода: ${fmt(cur.water_liters)} л</div>`:''}${cur?.recommendation?`<div class="cardHint">${escapeHtml(cur.recommendation)}</div>`:''}</div><div class="tableWrap"><table><thead><tr><th>День</th><th>Продукт</th><th>Дозування</th><th>Вода</th><th>Дії</th></tr></thead><tbody>${(r.data||[]).map(x=>`<tr><td>${x.growing_day}</td><td>${escapeHtml(x.product_name)}</td><td>${escapeHtml(x.dosage||'')}</td><td>${fmt(x.water_liters)} л</td><td><button class="secondary small" onclick="openDrinkingModal('${batchId}','${x.id}')">Ред.</button> <button class="danger small" onclick="deleteDrinking('${batchId}','${x.id}')">Видалити</button></td></tr>`).join('')||'<tr><td colspan="5" class="empty">Програма не задана</td></tr>'}</tbody></table></div></div>`}
+async function enhanceBroiler2(id){const b=batches.find(x=>x.id===id),d=$('broilerDetails');if(!b||!d)return;let e=$('broilerExtra2-'+id);if(!e){e=document.createElement('div');e.id='broilerExtra2-'+id;e.innerHTML=await feedRecommendation('broiler',b.placement_date)+`<div id="drinkingBox-${id}"></div>`;d.appendChild(e)}await showDrinking(id)}
+async function enhanceLayer2(id){const f=flocks.find(x=>x.id===id),d=$('layerDetails');if(!f||!d)return;let e=$('layerExtra2-'+id);if(!e){e=document.createElement('div');e.id='layerExtra2-'+id;e.innerHTML=await feedRecommendation('layer',f.placement_date);d.appendChild(e)}}
+const plusObserver=new MutationObserver(()=>{if(selectedBatch)enhanceBroiler2(selectedBatch);if(selectedFlock)enhanceLayer2(selectedFlock)});setTimeout(()=>{if($('broilerDetails'))plusObserver.observe($('broilerDetails'),{childList:true});if($('layerDetails'))plusObserver.observe($('layerDetails'),{childList:true})},500);
+
+</script>
+
+</body>
+</html>
